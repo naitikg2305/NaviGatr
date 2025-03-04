@@ -215,6 +215,25 @@ YOLOv4-Tiny struggles due to fewer layers capturing fine details
 
 ## Existing Datasets
 
+
+### Cityscapes Dataset
+https://www.cityscapes-dataset.com/
+![alt text](image-2.png)
+
+### Kaist Dataset
+https://github.com/SoonminHwang/rgbt-ped-detection
+![alt text](image-1.png)
+
+### FLIR Dataset
+https://www.flir.com/oem/adas/adas-dataset-form/
+![alt text](image.png)
+
+
++ https://www.nightowls-dataset.org/
++ https://github.com/cs-chan/Exclusively-Dark-Image-Dataset
++ https://www.kaggle.com/datasets/kalvinquackenbush/caltechpedestriandataset
+
+
 ## Above models in use (and their limitations)
 
 ## Sources
@@ -229,33 +248,3 @@ https://learnopencv.com/yolo-nas/
 https://thefuturefeed.medium.com/yolo-nas-decis-new-sota-object-detection-model-that-outperforms-yolov5-yolov6-yolov7-and-yolov8-a3fc1785320a
 https://www.researchgate.net/publication/379748121_YOLOv5_vs_YOLOv8_Performance_Benchmarking_in_Wildfire_and_Smoke_Detection_Scenarios
 https://blog.roboflow.com/guide-to-yolo-models/
-
-
-
-YOLOv8 (Ultralytics) – The latest version, optimized for speed and accuracy.
-YOLO-NAS – Faster and more efficient than YOLOv8, optimized for edge devices.
-YOLOv5 – A well-balanced model with great real-time performance.
-YOLOv4-Tiny / YOLOv7-Tiny – Extremely lightweight versions for mobile and embedded applications.
-YOLOv8-Nano 
-NanoDet
-
-NanoDet
-
-Designed for edge devices and mobile deployment.
-Fast and optimized for ARM-based processors.
-MobileNet SSD (Single Shot Detector)
-
-Lightweight and optimized for mobile and embedded systems.
-Can run efficiently on TensorFlow Lite and OpenVINO.
-PP-YOLOE (PaddlePaddle YOLO Enhanced)
-
-A more efficient version of YOLO with optimized inference speed.
-EfficientDet-Lite
-
-A variation of EfficientDet designed for mobile devices.
-Good balance of speed and accuracy.
-
-
-
-If you need the fastest detection: YOLOv8-Nano, YOLO-NAS, or MobileNet SSD.
-If you want better accuracy while keeping it real-time: YOLOv8-Small or EfficientDet-Lite.
