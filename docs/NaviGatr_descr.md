@@ -249,3 +249,14 @@ https://learnopencv.com/yolo-nas/
 https://thefuturefeed.medium.com/yolo-nas-decis-new-sota-object-detection-model-that-outperforms-yolov5-yolov6-yolov7-and-yolov8-a3fc1785320a
 https://www.researchgate.net/publication/379748121_YOLOv5_vs_YOLOv8_Performance_Benchmarking_in_Wildfire_and_Smoke_Detection_Scenarios
 https://blog.roboflow.com/guide-to-yolo-models/
+
+
+#### Do we want anchor-free detection?
+
+
+#### What is the maximum time to detection that we want to have?
+
+
+#### 
+
+
