@@ -17,12 +17,25 @@ This project aims to assist visually impaired individuals by implementing an obj
  + Determine main components (i.e. sensors, processing model, data synthesis, and output hardware) - Naitik
 )
 
-## Models in Use
-+ For ML model, show the architecture on a supplementary diagram (i.e. a different, smaller diagram) - Micah
+## NanoDet Project Model
 
-(Model we are using and justification) - Micah
+This project leverages the NanoDet pretrained model. Compared to similar models, the NanoDet is extremely lightweight at only 2.3[MB] for the NanoDet-Plus-m version. During comparative testing against other YOLO models, we found only the YOLOFastestV2 to be of better performance in speed. The NanoDet had supperior accuracy of 30.4[mAP] compared to 24.1[mAP] for the YOLOFastestV2. Additionally, the NanoDet is an anchor-free model which is why its memory profile is very low.
 
-(Annotated citations) - Micah
+![](image-3.png)
+
+| Accuracy [mAP] | Speed [ms/img] | Size [MB] | Resolution [px-by-px] |
+|----------------|----------------|-----------|-----------------------|
+| 27.0           | 5.25           | 2.3       | 320x320               |
+
+https://github.com/RangiLyu/nanodet
+
+Because of NanoDet's speed, low memory size, and efficent power consumption; we chose this model as our foundational model for the project scope.
+
+This model is planned to be implemented on a RaspberryPi4 or similar.
+
+https://github.com/Qengineering/YoloX-ncnn-Jetson-Nano?tab=readme-ov-file This repository is a benchmark assessment for object detection on many YOLO models. Since all models were used on the same test set and under similar conditions, it gives a fair comparison between models and edge device implementation.
+
+https://github.com/RangiLyu/nanodet Official NanoDet-Plus repository. The ideal benchmark metrics and architecture layout is described throughout the README of the repository.
 
 ## **Project Workflow & Timeline**
 
