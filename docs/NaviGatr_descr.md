@@ -299,6 +299,7 @@ https://www.researchgate.net/publication/379748121_YOLOv5_vs_YOLOv8_Performance_
 https://blog.roboflow.com/guide-to-yolo-models/
 
 
+<<<<<<< HEAD
 https://learnopencv.com/centernet-anchor-free-object-detection-explained/ An explanation to anchors in object detection.
 
 https://learnopencv.com/fcos-anchor-free-object-detection-explained/ An explanation of Fully Convolutional One-Stage (FCOS) object detection model using anchor-free approach to object boundaries.
@@ -327,5 +328,14 @@ The ding means they walked left enough to clear the object.
 + I argue time provides better obstacle awareness than distance or # of steps
 
 + For presentation day, we can create a leaderboard on how fast someone can navigated while simulating blindness.
+=======
+#### Do we want anchor-free detection?
+
+
+#### What is the maximum time to detection that we want to have?
+
+
+#### 
+>>>>>>> 65dfba94f770964cd0dfde218721dfc6695aab42
 
 
