@@ -4,7 +4,7 @@
 _Aiding Blind Individuals with Camera-Based Object Detection and Depth Sensing_
 
 ## **Project Team**
-- **Naitik** – Project Planner, API Implementation Research
+- **Naitik** – Project Planner, API Implementation Research, Emotion and person Detection
 - **Micah** – Object Detection Research & Implementation
 - **Eliav** – Depth Sensing Research & Implementation
 
