@@ -48,14 +48,18 @@ https://github.com/RangiLyu/nanodet Official NanoDet-Plus repository. The ideal 
 ### **Week 3/9: Initial Development (Pre-Spring Break)**
 - **Micah**: Begin implementing object detection.
 - **Eliav**: Begin working on depth sensing.
-- **Plan**: Object detection will be prioritized first, followed by depth sensing integration.
+- **Naitik**: Begin working on Emotion Detection and Person Detection
+- **Plan**: Object detection will be prioritized first, followed by depth sensing integration followed by emotion detection
 
-### **Week 3/16: Finalizing Models**
+### **Week 3/16:(Spring Break)**
+- **Try to work on things but mostly break**
+
+### **Week 3/23: Finalizing Models**
 - **Micah**: Finalize the object detection model.
 - **Eliav**: Finalize the depth sensing model.
 - **Naitik**: Finalize the emotion detection model.
 
-### **Week 3/23: Integration & App Development**
+### **Week 3/30: Integration & App Development**
 - **Team Task**: Integrate object detection, depth sensing, and emotion detection into the camera application.
 - **Naitik**: Implement full camera API integration.
 - **Testing**: Validate system functionality and performance.
@@ -71,6 +75,12 @@ https://github.com/RangiLyu/nanodet Official NanoDet-Plus repository. The ideal 
    - Implement depth estimation using stereo cameras or LiDAR.
    - Integrate depth information with detected objects.
    - Fine-tune depth accuracy.
+
+3. **Emotion Detection and Person Detection Phase** (Lead: Naitik)
+   - Try out currently existing emotion detection models alongwith person detection models
+   - Train/Test models with our specific team members( improve detection for specifically us )
+   - Develop a database with people for our specific class. (Optional, add integration to add a specific person to the database using the model for future meets)
+   - Run model and test accuracy with person and emotion detection
 
 3. **Integration & Testing**
    - Merge object detection, depth sensing, and emotion detection.
