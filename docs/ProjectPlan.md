@@ -11,11 +11,7 @@ _Aiding Blind Individuals with Camera-Based Object Detection and Depth Sensing_
 ## **Project Overview**
 This project aims to assist visually impaired individuals by implementing an object detection system using a camera and adding a layer of depth sensing to determine the distance of objects. The system will provide real-time feedback to help users navigate their surroundings more effectively.
 
-(DIAGRAM GOES HERE) - Naitik
-(+ Show data flow through system - Naitik
- + Indicate inputs - Naitik
- + Determine main components (i.e. sensors, processing model, data synthesis, and output hardware) - Naitik
-)
+![alt text](image-4.png)
 
 ## NanoDet Project Model
 
