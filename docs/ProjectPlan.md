@@ -11,7 +11,7 @@ _Aiding Blind Individuals with Camera-Based Object Detection and Depth Sensing_
 ## **Project Overview**
 This project aims to assist visually impaired individuals by implementing an object detection system using a camera and adding a layer of depth sensing to determine the distance of objects. The system will provide real-time feedback to help users navigate their surroundings more effectively.
 
-![alt text](image-4.png)
+![alt text](image.png)
 
 ## NanoDet Project Model
 
@@ -55,10 +55,42 @@ https://github.com/RangiLyu/nanodet Official NanoDet-Plus repository. The ideal 
 - **Eliav**: Finalize the depth sensing model.
 - **Naitik**: Finalize the emotion detection model.
 
-### **Week 3/30: Integration & App Development**
+### **Week 3/30: Integration & App Development (Milestone review)**
 - **Team Task**: Integrate object detection, depth sensing, and emotion detection into the camera application.
 - **Naitik**: Implement full camera API integration.
 - **Testing**: Validate system functionality and performance.
+
+### **Week 4/06: Hardware Integration**
+- **Team Task**: Porting from computers to Raspberry Pi
+- **Questions**: Who is paying for the hardware, is there a capstone fund
+- **Micah**: Extensions, models, Transformers, modules specific to raspberry pi from regular computers.(Involves making a branch)
+- **Eliav**: Webcam Integration with the project and hardware.
+- **Naitik**: Setting up ArchLinux, Cora TPU, pytorch, git repository.
+
+
+### **Week 04/13: Advertisement and presentation**
+- **Team Task**: Working on banners, Presentations, demonstration.
+- **Questions**: Who is paying for the banners, is there a standardized setup
+- **Micah**: Key points to talk about, present, demonstration plans.
+- **Eliav**: Banners, posters, Trifold 
+- **Naitik**: Presentation for slideshow on one of our computers.
+
+
+### **Week 04/20: Buffer Week1**
+- **Team Task**: Integrate object detection, depth sensing, and emotion detection into the camera application.
+- **Naitik**: Implement full camera API integration.
+- **Testing**: Validate system functionality and performance.
+
+### **Week 04/27: Finalize all aspects and recap**
+- **Team Task**: fully integrate project, test raspberry pi, proof reading all our stuff, running demonstrations for our projects
+- **Testing**: Validate system functionality and performance.
+
+### **Week 05/04: Rehearsals**
+- **Team Task**: Integrate object detection, depth sensing, and emotion detection into the camera application.
+- **Naitik**: Implement full camera API integration.
+- **Testing**: Validate system functionality and performance.
+
+### **Expo Date** : May 7th 2025 Wednesday
 
 
 ## **Development Plan**
