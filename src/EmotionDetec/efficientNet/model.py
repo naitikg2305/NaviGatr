@@ -26,3 +26,6 @@ image = np.expand_dims(image, axis=0)
 # Make a prediction
 predictions = model.predict(image)
 print("Predicted emotion scores:", predictions)
+
+
+

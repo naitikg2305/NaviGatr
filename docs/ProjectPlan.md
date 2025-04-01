@@ -56,11 +56,37 @@ https://github.com/RangiLyu/nanodet Official NanoDet-Plus repository. The ideal 
 - **Naitik**: Finalize the emotion detection model.
 
 ### **Week 3/30: Integration & App Development (Milestone review)**
-- **Team Task**: Integrate object detection, depth sensing, and emotion detection into the camera application.
-- **Naitik**: Implement full camera API integration.
-- **Testing**: Validate system functionality and performance.
+- **Project Tasks**
+   - **Team Task**: Integrate object detection, depth sensing, and emotion detection into the camera application. Implement full camera API integration.
+   - **Testing**: Validate system functionality and performance.
+- **Milestone Tasks(Due Friday)**
+   - **Main Template:**
+      1. Main Motivation 
+      2. Objectives
+      3. Approaches
+      4. Key Results/ Takeaways
+      5. Key Issues Encountered
+      6. Pivot Or Adjust.
+      7. Plan For the Remaining Weeks
+   - Slides
+      - **First Slide:** Introduction To the Project
+         - 1 , 2
+      - **Second Slide**: Approach to the Project
+         - 3
+      - **Third and Fourth:** Object Detection
+         - 4 Through 7
+         - Talking points described below.
+      - **Fifth and Sixth:**: Depth Sensing
+      - **Seventh and Eighth:**: Emotion Detection
+
+   - **Naitik:** Research and understand current model. Justification for the same(To include comparing alternate models, EfficientNet and FEr Dataset). Current Progress[2 Slides]
+   - **Eliav:**
+   - **Micah:** Research and understand current model. Justification for the same(To include comparing alternate models). Current Progress[2 Slides] 
 
 ### **Week 4/06: Hardware Integration**
+- #### <u>Deadlines</u>
+  - April 7th: Milestone Review Due
+   - April 8th: Presentation due
 - **Team Task**: Porting from computers to Raspberry Pi
 - **Questions**: Who is paying for the hardware, is there a capstone fund
 - **Micah**: Extensions, models, Transformers, modules specific to raspberry pi from regular computers.(Involves making a branch)
