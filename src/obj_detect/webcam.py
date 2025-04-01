@@ -2,6 +2,7 @@
 import os
 import cv2
 import json
+from src.sharable_data import result_queue, frame_queue
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 config_paths_json = os.path.join(script_dir, "config_paths.json")
@@ -11,7 +12,7 @@ with open(config_paths_json, "r") as file:
     config_data = json.load(file)
 
 
-def connect_to_webcam(frame_queue, result_queue):
+def connect_to_webcam():
     cam_url = config_data['ip_cam_addr']
     cap = cv2.VideoCapture(cam_url)
 
