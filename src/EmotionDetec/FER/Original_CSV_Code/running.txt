@@ -1,0 +1,1 @@
+sudo curl -L -o /home/naitikg2305/ENEE408Capstone/NaviGatr/src/EmotionDetec/Dataset/data.zip https://www.kaggle.com/api/v1/datasets/download/msambare/fer2013

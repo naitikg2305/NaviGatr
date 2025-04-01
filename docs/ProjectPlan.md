@@ -4,18 +4,14 @@
 _Aiding Blind Individuals with Camera-Based Object Detection and Depth Sensing_
 
 ## **Project Team**
-- **Naitik** – Project Planner, API Implementation Research
+- **Naitik** – Project Planner, API Implementation Research, Emotion and person Detection
 - **Micah** – Object Detection Research & Implementation
 - **Eliav** – Depth Sensing Research & Implementation
 
 ## **Project Overview**
 This project aims to assist visually impaired individuals by implementing an object detection system using a camera and adding a layer of depth sensing to determine the distance of objects. The system will provide real-time feedback to help users navigate their surroundings more effectively.
 
-(DIAGRAM GOES HERE) - Naitik
-(+ Show data flow through system - Naitik
- + Indicate inputs - Naitik
- + Determine main components (i.e. sensors, processing model, data synthesis, and output hardware) - Naitik
-)
+![alt text](image.png)
 
 ## NanoDet Project Model
 
@@ -48,17 +44,53 @@ https://github.com/RangiLyu/nanodet Official NanoDet-Plus repository. The ideal 
 ### **Week 3/9: Initial Development (Pre-Spring Break)**
 - **Micah**: Begin implementing object detection.
 - **Eliav**: Begin working on depth sensing.
-- **Plan**: Object detection will be prioritized first, followed by depth sensing integration.
+- **Naitik**: Begin working on Emotion Detection and Person Detection
+- **Plan**: Object detection will be prioritized first, followed by depth sensing integration followed by emotion detection
 
-### **Week 3/16: Finalizing Models**
+### **Week 3/16:(Spring Break)**
+- **Try to work on things but mostly break**
+
+### **Week 3/23: Finalizing Models**
 - **Micah**: Finalize the object detection model.
 - **Eliav**: Finalize the depth sensing model.
 - **Naitik**: Finalize the emotion detection model.
 
-### **Week 3/23: Integration & App Development**
+### **Week 3/30: Integration & App Development (Milestone review)**
 - **Team Task**: Integrate object detection, depth sensing, and emotion detection into the camera application.
 - **Naitik**: Implement full camera API integration.
 - **Testing**: Validate system functionality and performance.
+
+### **Week 4/06: Hardware Integration**
+- **Team Task**: Porting from computers to Raspberry Pi
+- **Questions**: Who is paying for the hardware, is there a capstone fund
+- **Micah**: Extensions, models, Transformers, modules specific to raspberry pi from regular computers.(Involves making a branch)
+- **Eliav**: Webcam Integration with the project and hardware.
+- **Naitik**: Setting up ArchLinux, Cora TPU, pytorch, git repository.
+
+
+### **Week 04/13: Advertisement and presentation**
+- **Team Task**: Working on banners, Presentations, demonstration.
+- **Questions**: Who is paying for the banners, is there a standardized setup
+- **Micah**: Key points to talk about, present, demonstration plans.
+- **Eliav**: Banners, posters, Trifold 
+- **Naitik**: Presentation for slideshow on one of our computers.
+
+
+### **Week 04/20: Buffer Week1**
+- **Team Task**: Integrate object detection, depth sensing, and emotion detection into the camera application.
+- **Naitik**: Implement full camera API integration.
+- **Testing**: Validate system functionality and performance.
+
+### **Week 04/27: Finalize all aspects and recap**
+- **Team Task**: fully integrate project, test raspberry pi, proof reading all our stuff, running demonstrations for our projects
+- **Testing**: Validate system functionality and performance.
+
+### **Week 05/04: Rehearsals**
+- **Team Task**: Integrate object detection, depth sensing, and emotion detection into the camera application.
+- **Naitik**: Implement full camera API integration.
+- **Testing**: Validate system functionality and performance.
+
+### **Expo Date** : May 7th 2025 Wednesday
 
 
 ## **Development Plan**
@@ -71,6 +103,12 @@ https://github.com/RangiLyu/nanodet Official NanoDet-Plus repository. The ideal 
    - Implement depth estimation using stereo cameras or LiDAR.
    - Integrate depth information with detected objects.
    - Fine-tune depth accuracy.
+
+3. **Emotion Detection and Person Detection Phase** (Lead: Naitik)
+   - Try out currently existing emotion detection models alongwith person detection models
+   - Train/Test models with our specific team members( improve detection for specifically us )
+   - Develop a database with people for our specific class. (Optional, add integration to add a specific person to the database using the model for future meets)
+   - Run model and test accuracy with person and emotion detection
 
 3. **Integration & Testing**
    - Merge object detection, depth sensing, and emotion detection.
