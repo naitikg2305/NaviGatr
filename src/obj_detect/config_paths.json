@@ -1,0 +1,8 @@
+{
+    "config_file": "nanodet-plus-m_416.yml",
+
+    "model_file": "nanodet-plus-m_416.pth",
+
+    "ip_cam_addr": "rtsp://192.168.0.21:1024/h264_pcm.sdp"
+
+}
