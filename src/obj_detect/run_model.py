@@ -7,10 +7,10 @@ from nanodet.util import cfg, load_config, Logger
 from demo.demo import Predictor
 from nanodet.util import overlay_bbox_cv
 import json
-from src.obj_detect.webcam import connect_to_webcam
+from src.webcam import connect_to_webcam
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-config_paths_json = os.path.join(script_dir, "config_paths.json")
+config_paths_json = os.path.join(script_dir, "config.json")
 
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
@@ -22,7 +22,7 @@ torch.backends.cudnn.benchmark = True
 
 ## Path to model files
 obj_detect_dir = os.path.dirname(os.path.abspath(__file__))  # This script's directory
-config_paths_json = os.path.join(obj_detect_dir, "config_paths.json")
+config_paths_json = os.path.join(obj_detect_dir, "config.json")
 with open(config_paths_json, "r") as file:
     config_data = json.load(file)
 config_path = os.path.join(obj_detect_dir, config_data['config_file'])
@@ -60,7 +60,8 @@ cap.release()
 cv2.destroyAllWindows()
 ''' # Parallel handling of frames and processing
 
-from src.sharable_data import frame_queue, result_queue
+from src.sharable_data import frame_queue, result_queue, view_queues
+
 
 def inference_thread():
     while True:
@@ -83,11 +84,18 @@ def inference_thread():
         result_queue.put(result_packet)
         frame_queue.task_done()
 
+def view_queues_thread():
+    view_queues()
+
 
 threading.Thread(target=inference_thread, daemon=True).start()  # Start inference in a separate thread
+# threading.Thread(target=connect_to_webcam, daemon=True).start()
 
-connect_to_webcam()
+connect_to_webcam(config_data['test_toggle'])
+
+# view_queues_thread()
 
 # This line will not run until webcam is closed.
 
 #'''
+

@@ -29,19 +29,56 @@ The outline is as follows:
 # Object Detection Component Process Overview
 
 
+
 # Performance Specifications
+
 
 
 # Constraint Considerations
 
 
+
 # Component's Application Interface
+
 
 
 # Adjustable Settings
 
+The objection detection model has a config.json file that hold all knobs and switches for customized behavior. The following are the available fields:
+
++ config_file - holds the path to the model's description of architecture (.yml file)
+
++ model_file - holds the path to the model weights (.pth file)
+
++ ip_cam_addr - holds the address to the IP camera's live-feed
+
++ ip_cam_toggle - determines if model is provided an IP Camera (true) for input or PiCam (false)
+
++ test_toggle - determines whether to enable test features
+
 
 # Interface Protocols to Other Components
 
+To run as a standalone model, simply invoke the following:
+
+1. Activate the environment using NaviGatr/docs/environment.yml. I called this environment 'navi_env'
+
+    `conda env create --file environment.yml`
+    
+    then
+
+    `conda activate navi_env`
+
+2. `git clone https://github.com/RangiLyu/nanodet.git`
+
+3. `cd nanodet`
+
+4. `python setup.py develop`
+
+5. `python -m src.obj_detect.run_model.py` from Navigatr root directory
+
+When not standalone, the model will comunicate and be called over interfaces.
+
 
 # Object Detection Codebase Structure
+
