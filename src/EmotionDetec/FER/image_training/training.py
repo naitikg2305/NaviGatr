@@ -8,3 +8,6 @@ history = model.fit(
     validation_steps=validation_generator.samples // batch_size,
     epochs=epochs
 )
+
+# Save the trained model
+model.save("emotion_model.h5")
