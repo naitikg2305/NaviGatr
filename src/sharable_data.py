@@ -12,8 +12,8 @@
 #          *) Resulting merged data gets pushed on 'result_queue'
 import queue
 
-frame_queue = queue.LifoQueue(maxsize=5)  # Captured frame
-result_queue = queue.Queue(maxsize=5) # Resulting frame data
+frame_queue = queue.Queue(maxsize=0)  # Captured frame
+result_queue = queue.Queue(maxsize=0) # Resulting frame data
 
 # Below are the queues for depth detection
 

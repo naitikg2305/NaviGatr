@@ -261,16 +261,16 @@ YOLOv4-Tiny struggles due to fewer layers capturing fine details
 
 ### Cityscapes Dataset
 https://www.cityscapes-dataset.com/
-![alt text](image-2.png)
+![alt text](/imgs/image-2.png)
 
 ### Kaist Dataset
 https://github.com/SoonminHwang/rgbt-ped-detection
-![alt text](image-1.png)
+![alt text](/imgs/image-1.png)
 
 ### FLIR Dataset
 https://www.flir.com/oem/adas/adas-dataset-form/
 
-![alt text](image.png)
+![alt text](/imgs/image.png)
 
 
 + https://www.nightowls-dataset.org/

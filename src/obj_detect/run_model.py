@@ -60,7 +60,7 @@ cap.release()
 cv2.destroyAllWindows()
 ''' # Parallel handling of frames and processing
 
-from src.sharable_data import frame_queue, result_queue, view_queues
+from src.sharable_data import frame_queue, result_queue
 
 
 def inference_thread():
