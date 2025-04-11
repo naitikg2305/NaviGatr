@@ -11,13 +11,13 @@ _Aiding Blind Individuals with Camera-Based Object Detection and Depth Sensing_
 ## **Project Overview**
 This project aims to assist visually impaired individuals by implementing an object detection system using a camera and adding a layer of depth sensing to determine the distance of objects. The system will provide real-time feedback to help users navigate their surroundings more effectively.
 
-![alt text](image.png)
+![alt text](/imgs/image.png)
 
 ## NanoDet Project Model
 
 This project leverages the NanoDet pretrained model. Compared to similar models, the NanoDet is extremely lightweight at only 2.3[MB] for the NanoDet-Plus-m version. During comparative testing against other YOLO models, we found only the YOLOFastestV2 to be of better performance in speed. The NanoDet had supperior accuracy of 30.4[mAP] compared to 24.1[mAP] for the YOLOFastestV2. Additionally, the NanoDet is an anchor-free model which is why its memory profile is very low.
 
-![](image-3.png)
+![](/imgs/image-3.png)
 
 | Accuracy [mAP] | Speed [ms/img] | Size [MB] | Resolution [px-by-px] |
 |----------------|----------------|-----------|-----------------------|

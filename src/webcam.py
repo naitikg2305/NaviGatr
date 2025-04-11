@@ -60,50 +60,138 @@ def test_picam():
 
     print(f"picam test image as picam_img_{time_now}.jpg")
 #'''
-
+'''
 def connect_to_webcam(test_toggle: bool = False):
+    cam_url = config_data['ip_cam_addr']
+    cap = cv2.VideoCapture(cam_url)
 
     if test_toggle:
         frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) #
         frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) #
-        fps = int(cap.get(cv2.CAP_PROP_FPS)) or 30  # fallback if FPS not detected #
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        fps = int(fps) if fps and fps > 0 else 30  # fallback if FPS not detected #
+        fps = 15
 
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v') #
+        fourcc = cv2.VideoWriter_fourcc(*'MJPG') #
         raw_out = cv2.VideoWriter("raw_feed.avi", fourcc, fps, (frame_width, frame_height)) #
         processed_out = cv2.VideoWriter("processed_feed.avi", fourcc, fps, (frame_width, frame_height)) #
 
-    cam_url = config_data['ip_cam_addr']
-    cap = cv2.VideoCapture(cam_url)
 
+    frame_count = 0
     while cap.isOpened():
         ret, frame = cap.read()
+        print("Frame shape:", frame.shape)
+        print(f"\nFrame width: {frame_width}, Frame height: {frame_height}\n")
         if not ret:
             break
 
         if test_toggle:
             raw_out.write(frame)
 
-        if not frame_queue.full():
-            frame_queue.put(frame)
+        try:
+            frame_queue.put_nowait(frame)
+        except:
+            print("Frame queue is full. Skipping frame...")
 
-        if not result_queue.empty():
-            result_packet = result_queue.get()
+        try:
+            result_packet = result_queue.get(timeout=1.0)  # avoid blocking forever
+        except:
+            continue
 
-            # Access the processed frame for visualization
-            processed_frame = result_packet["processed_frame"]
-            detections = result_packet["detections"]
-            timestamp = result_packet["timestamp"]
-            
+        # Access the processed frame for visualization
+        processed_frame = result_packet["processed_frame"]
+        detections = result_packet["detections"]
+        timestamp = result_packet["timestamp"]
+
+        
+
+        # Inside loop:
+        if processed_frame is not None:
             if test_toggle:
-                print(f"Frame Timestamp: {timestamp}, Detections: {len(detections)} objects found.")
-                processed_out.write(processed_frame)
+                processed_out.write(processed_frame.copy())  # <-- KEY FIX
+                frame_count += 1
+                print(f"[Saved Frame #{frame_count}] Timestamp: {timestamp}, Detections: {len(detections)}")
 
-            cv2.imshow("Phone IP Camera", processed_frame)
+        cv2.imshow("Phone IP Camera", processed_frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to exit
             break
 
     cap.release()
+    if test_toggle:
+        raw_out.release()
+        processed_out.release()
     frame_queue.put(None)  # Stop the inference thread
     cv2.destroyAllWindows()
+'''
+def connect_to_webcam(test_toggle: bool = False):
+    print(f"test_toggle is: {test_toggle}\n\n")
+    cam_url = config_data['ip_cam_addr']
+    cap = cv2.VideoCapture(cam_url)
+
+    if test_toggle:
+        frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        fps = int(fps) if fps and fps > 0 else 30  # fallback if FPS not detected
+        fps = 15  # Set a reasonable FPS manually (make sure this matches your camera feed FPS)
+
+        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        raw_out = cv2.VideoWriter("raw_feed.avi", fourcc, fps, (frame_width, frame_height))
+        processed_out = cv2.VideoWriter("processed_feed.avi", fourcc, fps, (frame_width, frame_height))
+
+    frame_count = 0  # Keep track of frame count globally
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        print(f"Frame shape: {frame.shape}")
+        print(f"Frame width: {frame_width}, Frame height: {frame_height}")
+        
+        if frame is None:
+            print("\nFrame is None\n")
+
+        if test_toggle:
+            raw_out.write(frame)
+            print(f"\nFRAME WAS WRITTEN\n")
+
+        try:
+            frame_queue.put_nowait(frame)
+        except:
+            print("Frame queue is full. Skipping frame...")
+
+        try:
+            result_packet = result_queue.get(timeout=1.0)  # avoid blocking forever
+        except:
+            continue
+
+        # Access the processed frame for visualization
+        processed_frame = result_packet["processed_frame"]
+        detections = result_packet["detections"]
+        timestamp = result_packet["timestamp"]
+
+        if processed_frame is not None:
+            print(f"Processed frame is not none")
+            if test_toggle:
+                processed_out.write(processed_frame.copy())  # Write processed frame to file
+                frame_count += 1  # Increment frame count
+                print(f"[Saved Frame #{frame_count}] Timestamp: {timestamp}, Detections: {len(detections)}")
+
+        cv2.imshow("Phone IP Camera", processed_frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to exit
+            break
+
+    cap.release()
+    if test_toggle:
+        raw_out.release()
+        processed_out.release()
+        print(f"Saved videos were released")
+    frame_queue.put(None)  # Stop the inference thread
+    cv2.destroyAllWindows()
+
+
+
 
