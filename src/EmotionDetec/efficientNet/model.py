@@ -2,7 +2,9 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
 import cv2
+import time 
 
+start=time.time()
 # Load EfficientNet-Lite feature vector model
 feature_extractor_layer = hub.KerasLayer(
     "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet1k_s/classification/2",
@@ -54,6 +56,7 @@ print("Predicted emotion scores for image3:", predictions)
 predictions = model.predict(image4)
 print("Predicted emotion scores for image4:", predictions)
 
-
+end = time.time()
+print(f"Inference Time: {end - start:.2f}s")
 
 
