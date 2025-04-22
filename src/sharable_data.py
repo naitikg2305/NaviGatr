@@ -10,12 +10,39 @@
 #          6) Frame on 'frame_queue' is popped indicating frame has been handled
 #          7) All component's result queues are popped and data merging is handled
 #          *) Resulting merged data gets pushed on 'result_queue'
-import queue
+from collections import deque
+import threading
 
-frame_queue = queue.Queue(maxsize=0)  # Captured frame
-result_queue = queue.Queue(maxsize=0) # Resulting frame data
+thread_lock = threading.Lock()
 
-# Below are the queues for depth detection
+class RecentFrameQueue:
+    def __init__(self, max_size=1):
+        """
+        __init__ constructor for RecentFrameQueue
 
+        :param max_size: maximum number of frames to keep in the queue, defaults to 1
+        """
+        self.max_size = max_size
+        # Validate max_size
+        if max_size < 1 or not isinstance(max_size, int):
+            raise ValueError("max_size must be at least 1 and an integer")
+        self.queue = deque(maxlen=max_size)
 
-# Below are the queues for object detection
+    def __len__(self):
+        return len(self.queue)
+
+    def put(self, frame):
+        self.queue.append(frame)
+
+    def get(self):
+        return self.queue.popleft()
+
+frame_queue = RecentFrameQueue()  # Captured frame
+obj_queue = RecentFrameQueue(max_size=1)
+depth_queue = RecentFrameQueue(max_size=1)
+emot_queue = RecentFrameQueue(max_size=1)
+
+# Result queues (i.e. post-inferencing)
+obj_res_queue = deque()
+depth_res_queue = deque()
+emot_res_queue = deque()
