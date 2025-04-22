@@ -1,0 +1,13 @@
+{
+    "camera_method": "webcam",
+
+    "ip_cam_addr": "rtsp://192.168.0.23:1024/h264_pcm.sdp",
+
+    "obj_detect_on": true,
+
+    "deph_detect_on": true,
+
+    "emotion_detect_on": true,
+
+    "test_toggle": true
+}
