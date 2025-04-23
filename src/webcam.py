@@ -1,6 +1,10 @@
 import time
+
+import numpy as np
 import cv2
 import threading
+
+from typing import List
 # from picamera2 import Picamera2 # Only available on Linux-based systems
 from src.sharable_data import (frame_queue, thread_lock,
                                obj_queue, depth_queue, emot_queue,
@@ -8,17 +12,23 @@ from src.sharable_data import (frame_queue, thread_lock,
 
 def run_camera_service(camera_type: str, ip_cam_addr: str=None, test_toggle: bool = False):
     print(f"Running camera service...\nCamera type: {camera_type}, IP address: {ip_cam_addr}, Test mode: {test_toggle}")
-    if camera_type == "webcam":
+    if camera_type == "webcam" or camera_type == "webcam_single":
         capture: cv2.VideoCapture
         raw_out: cv2.VideoWriter
         processed_out: cv2.VideoWriter
         capture, raw_out, processed_out = connect_to_webcam(ip_cam_addr=ip_cam_addr, test_toggle=test_toggle)
 
         # Capture video frames from active webcam
-        capturing_frames_thread = threading.Thread(target=capture_frames, args=(capture, raw_out, test_toggle), daemon=True)
+        if camera_type == "webcam":
+            capturing_frames_thread = threading.Thread(target=capture_frames, args=(capture, raw_out, test_toggle), daemon=True)
+        elif camera_type == "webcam_single":
+            capturing_frames_thread = threading.Thread(target=capture_one_frame, args=(camera_type, capture, raw_out, test_toggle), daemon=True)
+        else:
+            raise ValueError(f"Unknown camera type: {camera_type}")
         capturing_frames_thread.start()
+
         # Display video frames processed by ML models
-        viewing_obj_frames_thread = threading.Thread(target=view_processed_frames, args=("obj_det", processed_out, test_toggle), daemon=True)
+        viewing_obj_frames_thread = threading.Thread(target=view_processed_frames, args=(processed_out, test_toggle), daemon=True)
         viewing_obj_frames_thread.start()
         # Running capture_frames and view_processed_frames in parallel
 
@@ -143,23 +153,101 @@ def capture_frames(capture: cv2.VideoCapture, raw_out:cv2.VideoWriter=None, test
 
             #thread_lock.release()
 
-def view_processed_frames(model:str, processed_out, test_toggle: bool):
+def view_processed_frames(processed_out, test_toggle: bool):
+    processed_out:List[cv2.VideoWriter]
+
     print(f"Viewing processed frames...")
+    blank_image = np.zeros((400, 400, 3), dtype=np.uint8)  # Create a blank image as placeholders
+    margin = np.zeros((400, 20, 3), dtype=np.uint8)
+    # Create a window with three slots
+    cv2.namedWindow("Models' Results", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("Models' Results", 1200, 400)
+    # Display the blank image in each slot
+    #cv2.imshow("Models' Results", np.hstack((blank_image, blank_image, blank_image)))
+    cv2.imshow("Models' Results", np.hstack((blank_image, margin, blank_image, margin, blank_image)))
+    # Move the window to the left slot
+    cv2.moveWindow("Models' Results", 0, 0)
+    
+
     br = False
+    obj_slot = blank_image
+    dep_slot = blank_image
+    emo_slot = blank_image
+    frame_count = 0
+    while br == False:
+        obj_bool = True
+        dep_bool = True
+        emo_bool = True
+        time.sleep(0.05)
+        try:
+            obj_result_packet = obj_res_queue.pop()
+        except:
+            obj_bool = False
+        try:
+            dep_result_packet = depth_res_queue.pop()
+        except:
+            dep_bool = False
+        try:
+            emo_result_packet = emot_res_queue.pop()
+        except:
+            emo_bool = False
+
+        if obj_bool:
+            # Access the processed frame for visualization
+            processed_frame = obj_result_packet["processed_frame"]
+            detections = obj_result_packet["detections"]
+            timestamp = obj_result_packet["timestamp"]
+
+            if processed_frame is not None:
+                print(f"\nThread2: Processed frame is not none")
+                if test_toggle:
+                    processed_out[0].write(processed_frame.copy())  # Write processed frame to file
+                    frame_count += 1  # Increment frame count
+                    print(f"Thread2: [Saved Frame #{frame_count}] Timestamp: {timestamp}")
+                obj_slot = processed_frame
+
+
+        if dep_bool:
+            # Access the processed frame for visualization
+            processed_frame = dep_result_packet["processed_frame"]
+            dfocallength_px = dep_result_packet["focallength_px"]
+            timestamp = dep_result_packet["timestamp"]
+
+            if processed_frame is not None:
+                print(f"\nThread2: Processed frame is not none")
+                if test_toggle:
+                    processed_out[1].write(processed_frame.copy())  # Write processed frame to file
+                    frame_count += 1  # Increment frame count
+                    print(f"Thread2: [Saved Frame #{frame_count}] Timestamp: {timestamp}")
+                dep_slot = processed_frame
+
+        if emo_bool:
+            # Access the processed frame for visualization
+            pass
+        obj_slot = cv2.resize(obj_slot, (400, 400), interpolation=cv2.INTER_AREA)
+        dep_slot = cv2.resize(dep_slot, (400, 400), interpolation=cv2.INTER_AREA)
+        emo_slot = cv2.resize(emo_slot, (400, 400), interpolation=cv2.INTER_AREA)
+        cv2.imshow("Models' Results", np.hstack((obj_slot, margin, dep_slot, margin, emo_slot)))
+        #cv2.imshow("Models' Results", np.hstack((obj_slot, dep_slot, emo_slot)))
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to exit
+            br = True
+    '''
     res_queue = None
     # Switch to the desired model
-    if model == "obj_det":
+    if models[0]:
         res_queue = obj_res_queue
         processed_out = processed_out[0]
-    elif model == "depth_det":
+    if models[1]:
         res_queue = depth_res_queue
         processed_out = processed_out[1]
-    elif model == "emot_det":
+    if models[2]:
         res_queue = emot_res_queue
         processed_out = processed_out[2]
-
+    
     processed_out:cv2.VideoWriter
-
+    '''
+    '''
     frame_count = 0
     while br == False:
         time.sleep(0.02)
@@ -167,6 +255,8 @@ def view_processed_frames(model:str, processed_out, test_toggle: bool):
             result_packet = res_queue.pop()
         except:
             continue
+
+
 
         # Access the processed frame for visualization
         processed_frame = result_packet["processed_frame"]
@@ -180,10 +270,12 @@ def view_processed_frames(model:str, processed_out, test_toggle: bool):
                 frame_count += 1  # Increment frame count
                 print(f"Thread2: [Saved Frame #{frame_count}] Timestamp: {timestamp}")
 
-        cv2.imshow("Phone IP Camera", processed_frame)
-
+            cv2.imshow("Phone IP Camera", processed_frame)
+    
         if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to exit
             br = True
+
+    ''' 
 
 
 def shutdown_webcam(capture: cv2.VideoCapture, raw_out: cv2.VideoWriter, processed_out: cv2.VideoWriter, test_toggle: bool = False):
@@ -203,26 +295,39 @@ def shutdown_webcam(capture: cv2.VideoCapture, raw_out: cv2.VideoWriter, process
     cv2.destroyAllWindows()
     time.sleep(1)
 
-def capture_one_frame(capture: cv2.VideoCapture, raw_out:cv2.VideoWriter=None, test_toggle: bool = False):
+def capture_one_frame(camera_type: str, capture: cv2.VideoCapture, raw_out:cv2.VideoWriter=None, test_toggle: bool = False, dev_code: str = None):
 
-    if capture.isOpened():
-        #if thread_lock.acquire():
-        time.sleep(0.04)
-        ret, frame = capture.read()
-        if not ret:
-            return
+    if camera_type == "webcam_single":
+        print(f"Capturing one frame...")
+        if capture.isOpened():
+            #if thread_lock.acquire():
+            time.sleep(0.04)
+            ret, frame = capture.read()
+            if not ret:
+                return
+            print(f"Thread1: Captured single frame")
+            if frame is None:
+                print("\nThread1: Frame is None\n")
+            
+            if test_toggle:
+                raw_out.write(frame)
 
-        if frame is None:
-            print("\nThread1: Frame is None\n")
-        
-        if test_toggle:
-            raw_out.write(frame)
+            try:
+                frame_queue.put(frame)
+                obj_queue.put(frame)
+                depth_queue.put(frame)
+                emot_queue.put(frame)
+                print(f"Thread1: Single frame added to queue. Queue now of size: {len(frame_queue)}")
+            except:
+                print("Thread1: Frame queue is full. Skipping frame...") 
+                #thread_lock.release()
 
-        try:
-            frame_queue.put(frame)
-            obj_queue.put(frame)
-            depth_queue.put(frame)
-            emot_queue.put(frame)
-        except:
-            print("Thread1: Frame queue is full. Skipping frame...") 
-            #thread_lock.release()
+    elif camera_type == "saved_single":
+        pass # TODO: Use a image file path to load the single image into the program
+    
+    if dev_code == "expo":
+        return frame
+    # Keep function running until user turns off camera
+    while capture.isOpened():
+        time.sleep(5)
+

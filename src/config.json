@@ -1,7 +1,7 @@
 {
-    "camera_method": "webcam",
+    "camera_method": "webcam_single",
 
-    "ip_cam_addr": "rtsp://10.3.18.2:1024/h264_pcm.sdp",
+    "ip_cam_addr": "rtsp://192.168.137.115:1024/h264_pcm.sdp",
 
     "obj_detect_on": true,
 
@@ -9,5 +9,7 @@
 
     "emotion_detect_on":false,
 
-    "test_toggle": true
+    "test_toggle": true,
+
+    "dev_code": "expo"
 }
