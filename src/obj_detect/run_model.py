@@ -57,7 +57,7 @@ def run_obj_detect_model(frame=None, test_toggle: bool = False):
     """
     print(f"Booting up object detection model...")
     # Give time for camera service to generate its first frame
-    time.sleep(10)
+    time.sleep(15)
     print(f"Running object detection model...")
 
     frame_given = True  # Assume frame was given
@@ -73,7 +73,10 @@ def run_obj_detect_model(frame=None, test_toggle: bool = False):
             start_time = time.time()  # Timestamp
             meta, res = predictor.inference(frame)  # Run inference on a frame and get results
             thread_lock.release()
-            log_inference_outputs(meta, res)
+            
+            if test_toggle: # Log inference outputs
+                log_inference_outputs(meta, res)
+
             processed_frame = overlay_bbox_cv(meta['raw_img'][0], res[0],
                                             cfg.class_names, score_thresh=0.35) # Draw bounding boxes
             
@@ -96,11 +99,16 @@ def run_obj_detect_model(frame=None, test_toggle: bool = False):
                 break
 
 def log_inference_outputs(meta, res):
-    print(f"\nThread3: meta['img_info'] shape: {meta['img_info'].shape}, meta['img_info']: {meta['img_info']}")
-    print(f"\nThread3: meta['raw_img'] shape: {meta['raw_img'].shape}, meta['raw_img']: {meta['raw_img']}")
-    print(f"\nThread3: meta['img'] Tensor shape: {meta['img'].shape}, meta['img']: {meta['img']}")
+    # print(f"\nThread3: meta['img_info'] shape: {meta['img_info'].shape}, meta['img_info']: {meta['img_info']}")
+    print(f"\nThread3: meta['img_info']: {meta['img_info']}")
+    # print(f"\nThread3: meta['raw_img'] shape: {meta['raw_img'].shape}, meta['raw_img']: {meta['raw_img']}")
+    print(f"\nThread3: meta['raw_img']: {meta['raw_img']}")
+    # print(f"\nThread3: meta['img'] Tensor shape: {meta['img'].shape}, meta['img']: {meta['img']}")
+    print(f"\nThread3: meta['img']: {meta['img']}")
     print(f"\nThread3: meta['warp_matrix']: {meta['warp_matrix']}")
-    print(f"\nThread3: res['warp_matrix_inv']: {meta['warp_matrix_inv']}")
     # loop through all 80 classification labels
     for i in range(80):
-        print(f"\nThread3: res[0][{i}] shape: {res[0][i].shape}, Classification {i} details: {res[0][i]}")
+        # print(f"\nThread3: res[0][{i}] shape: {res[0][i].shape}, Classification {i} details: {res[0][i]}")
+        print(f"\nThread3: Classification {i} details: {res[0][i]}")
+
+

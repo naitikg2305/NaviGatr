@@ -122,23 +122,24 @@ def capture_frames(capture: cv2.VideoCapture, raw_out:cv2.VideoWriter=None, test
     # Until webcam has been closed
     while capture.isOpened():
         #if thread_lock.acquire():
-            ret, frame = capture.read()
-            if not ret:
-                break
+        time.sleep(0.04)
+        ret, frame = capture.read()
+        if not ret:
+            break
 
-            if frame is None:
-                print("\nThread1: Frame is None\n")
-            
-            if test_toggle:
-                raw_out.write(frame)
+        if frame is None:
+            print("\nThread1: Frame is None\n")
+        
+        if test_toggle:
+            raw_out.write(frame)
 
-            try:
-                frame_queue.put(frame)
-                obj_queue.put(frame)
-                depth_queue.put(frame)
-                emot_queue.put(frame)
-            except:
-                print("Thread1: Frame queue is full. Skipping frame...") 
+        try:
+            frame_queue.put(frame)
+            obj_queue.put(frame)
+            depth_queue.put(frame)
+            emot_queue.put(frame)
+        except:
+            print("Thread1: Frame queue is full. Skipping frame...") 
 
             #thread_lock.release()
 
@@ -161,7 +162,7 @@ def view_processed_frames(model:str, processed_out, test_toggle: bool):
 
     frame_count = 0
     while br == False:
-        #time.sleep(0.2)
+        time.sleep(0.02)
         try:
             result_packet = res_queue.pop()
         except:
@@ -202,4 +203,26 @@ def shutdown_webcam(capture: cv2.VideoCapture, raw_out: cv2.VideoWriter, process
     cv2.destroyAllWindows()
     time.sleep(1)
 
-#def capture_one_frame(frame: np.ndarray):
+def capture_one_frame(capture: cv2.VideoCapture, raw_out:cv2.VideoWriter=None, test_toggle: bool = False):
+
+    if capture.isOpened():
+        #if thread_lock.acquire():
+        time.sleep(0.04)
+        ret, frame = capture.read()
+        if not ret:
+            return
+
+        if frame is None:
+            print("\nThread1: Frame is None\n")
+        
+        if test_toggle:
+            raw_out.write(frame)
+
+        try:
+            frame_queue.put(frame)
+            obj_queue.put(frame)
+            depth_queue.put(frame)
+            emot_queue.put(frame)
+        except:
+            print("Thread1: Frame queue is full. Skipping frame...") 
+            #thread_lock.release()
