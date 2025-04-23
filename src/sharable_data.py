@@ -35,7 +35,17 @@ class RecentFrameQueue:
         self.queue.append(frame)
 
     def get(self):
-        return self.queue.popleft()
+        res = None
+        try:
+            print(f"Trying to pop frame...")
+            res = self.queue.popleft()
+        except:
+            print(f"Could not pop frame from left...")
+            res = self.queue.pop()
+            print(f"Successfully popped frame from right...")
+
+        return res
+    
 
 frame_queue = RecentFrameQueue()  # Captured frame
 obj_queue = RecentFrameQueue(max_size=1)

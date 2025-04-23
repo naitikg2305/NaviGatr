@@ -3,7 +3,7 @@
 
     "model_file": "nanodet-plus-m_416.pth",
 
-    "ip_cam_addr": "rtsp://10.174.186.157:1024/h264_pcm.sdp",
+    "ip_cam_addr": "rtsp://192.168.137.115:1024/h264_pcm.sdp",
 
-    "test_toggle": false
+    "test_toggle": true
 }
