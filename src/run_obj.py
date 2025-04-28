@@ -15,16 +15,39 @@ if frame is None:
 
 result_packet = run_obj_detect_model(frame=frame, test_toggle=True)
 
-# cv2.imshow("Processed Frame", result_packet["processed_frame"])
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
+try:
+    result_img = result_packet["processed_frame"]  # numpy array with bboxes drawn
 
-success, encoded_img = cv2.imencode('.jpg', result_packet["processed_frame"])
+    # Show image using OpenCV
+    print(f"Type of result_img: {type(result_img)}")
+    cv2.imshow('Result', result_img)
+    cv2.waitKey(0)
+
+except Exception:   
+    print(f"ERROR: Failed to display image: {result_packet['processed_frame']}", file=sys.stderr)
+    sys.exit(1)
+
+
+''' No need to encode, don't ask me why'''
+success, encoded_img = cv2.imencode('.jpg', result_img)
+
+
+# Now encode
+# success, encoded_img = cv2.imencode('.jpg', img_cv2)
+
 if not success:
     print("ERROR: Failed to encode image", file=sys.stderr)
     sys.exit(1)
 
+
+
+# Convert to base64
 result_packet["processed_frame"] = base64.b64encode(encoded_img.tobytes()).decode('utf-8')
 
-with open(output_path, "w") as f:
-    json.dump(result_packet, f)
+try:
+    with open(output_path, "w") as f:
+        json.dump(result_packet, f)
+
+except Exception:
+    print(f"ERROR: Failed to write output to file: {output_path}", file=sys.stderr)
+    sys.exit(1)

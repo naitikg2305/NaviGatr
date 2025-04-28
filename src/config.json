@@ -9,6 +9,8 @@
 
     "emotion_detect_on":false,
 
+    "confidence_threshold": 0.5,
+
     "test_toggle": true,
 
     "dev_code": "expo"

@@ -37,7 +37,6 @@ class RecentFrameQueue:
     def get(self):
         res = None
         try:
-            print(f"Trying to pop frame...")
             res = self.queue.popleft()
         except:
             print(f"Could not pop frame from left...")
