@@ -172,12 +172,12 @@ def view_processed_frames(processed_out, test_toggle: bool):
     br = False
     obj_slot = blank_image
     dep_slot = blank_image
-    emo_slot = blank_image
+    cap_slot = blank_image
     frame_count = 0
     while br == False:
         obj_bool = True
         dep_bool = True
-        emo_bool = True
+        cap_bool = True
         time.sleep(0.05)
         try:
             obj_result_packet = obj_res_queue.pop()
@@ -188,22 +188,23 @@ def view_processed_frames(processed_out, test_toggle: bool):
         except:
             dep_bool = False
         try:
-            emo_result_packet = emot_res_queue.pop()
+            cap_result_packet = frame_queue.get()
+            frame_queue.put(cap_result_packet)
         except:
-            emo_bool = False
+            cap_bool = False
 
         if obj_bool:
             # Access the processed frame for visualization
             processed_frame = obj_result_packet["processed_frame"]
             detections = obj_result_packet["detections"]
-            timestamp = obj_result_packet["timestamp"]
+            inference_time = obj_result_packet["inference_time"]
 
             if processed_frame is not None:
                 print(f"\nThread2: Processed frame is not none")
                 if test_toggle:
                     processed_out[0].write(processed_frame.copy())  # Write processed frame to file
                     frame_count += 1  # Increment frame count
-                    print(f"Thread2: [Saved Frame #{frame_count}] Timestamp: {timestamp}")
+                    print(f"Thread2: [Saved Frame #{frame_count}] Inference Time: {inference_time}")
                 obj_slot = processed_frame
 
 
@@ -211,23 +212,23 @@ def view_processed_frames(processed_out, test_toggle: bool):
             # Access the processed frame for visualization
             processed_frame = dep_result_packet["processed_frame"]
             dfocallength_px = dep_result_packet["focallength_px"]
-            timestamp = dep_result_packet["timestamp"]
+            inference_time = obj_result_packet["inference_time"]
 
             if processed_frame is not None:
                 print(f"\nThread2: Processed frame is not none")
                 if test_toggle:
                     processed_out[1].write(processed_frame.copy())  # Write processed frame to file
                     frame_count += 1  # Increment frame count
-                    print(f"Thread2: [Saved Frame #{frame_count}] Timestamp: {timestamp}")
+                    print(f"Thread2: [Saved Frame #{frame_count}] Inference Time: {inference_time}")
                 dep_slot = processed_frame
 
-        if emo_bool:
+        if cap_bool:
             # Access the processed frame for visualization
-            pass
+            cap_slot = cap_result_packet.copy()
         obj_slot = cv2.resize(obj_slot, (400, 400), interpolation=cv2.INTER_AREA)
         dep_slot = cv2.resize(dep_slot, (400, 400), interpolation=cv2.INTER_AREA)
-        emo_slot = cv2.resize(emo_slot, (400, 400), interpolation=cv2.INTER_AREA)
-        cv2.imshow("Models' Results", np.hstack((obj_slot, margin, dep_slot, margin, emo_slot)))
+        cap_slot = cv2.resize(cap_slot, (400, 400), interpolation=cv2.INTER_AREA)
+        cv2.imshow("Models' Results", np.hstack((cap_slot, margin, obj_slot, margin, dep_slot)))
         #cv2.imshow("Models' Results", np.hstack((obj_slot, dep_slot, emo_slot)))
 
         if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to exit

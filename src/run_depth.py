@@ -29,7 +29,9 @@ if isinstance(depth, torch.Tensor):
 
 # (Optional) If you need to visualize the depth map:
 # Normalize the depth to a range [0, 255] for visualization
-depth_vis = (depth_np / depth_np.max() * 255).astype(np.uint8)
+depth_vis = -(255*(depth_np / depth_np.max()) - 255).astype(np.uint8)
+depth_vis_colored = cv2.applyColorMap(depth_vis, cv2.COLORMAP_JET)
+
 depth_vis_colored = cv2.applyColorMap(depth_vis, cv2.COLORMAP_JET)
 
 # Encode the visualized depth map as an image (for saving)

@@ -2,7 +2,6 @@ import base64
 import json
 import os
 import subprocess
-import sys
 import threading
 import time
 import cv2
@@ -45,11 +44,11 @@ if navigatr_config['dev_code'] != "expo":
 
 else:
     # Run sequentially
-    # cam_out = subprocess.run(['conda', 'run', '-n', 'env2', 'python', '-m', 'src.run_camera'])
-    # cam_out.wait()
     ip_cam_addr = navigatr_config['ip_cam_addr']
     test_toggle = navigatr_config['test_toggle']
-    '''
+
+    #'''
+
     capture, raw_out, processed_out = connect_to_webcam(ip_cam_addr=ip_cam_addr, test_toggle=test_toggle)
     frame = capture_one_frame("webcam_single", capture, raw_out, test_toggle, navigatr_config['dev_code'])
 
@@ -67,12 +66,12 @@ else:
 
     with open(input_image_path, "wb") as f:
         f.write(encoded_img.tobytes())
-    '''
+    #'''
     display_thread = threading.Thread(target=view_processed_frames,
                                     args=([None, None, None], False), daemon=False)
     display_thread.start()
 
-    input_image_path = "test_input_img.jpg" # Path to the input image that was captured
+    # input_image_path = "test_input_img.jpg" # Path to the input image that was captured
     obj_output_json_path = "obj_output.json" # Path to where output data will be stored
     dep_output_json_path = "dep_output.json" # Path to where output data will be stored
     emot_output_json_path = "emot_output.json" # Path to where output data will be stored
@@ -91,8 +90,6 @@ else:
         print(f"ERROR: run_obj failed:\n{stderr_data}")
         exit(1)
 
-    # p1.wait()
-
     with open(obj_output_json_path, "r") as f:
         result_packet = json.load(f)
 
@@ -103,15 +100,11 @@ else:
     processed_img_np = np.frombuffer(processed_img_bytes, dtype=np.uint8)
     processed_img = cv2.imdecode(processed_img_np, cv2.IMREAD_COLOR)
 
-    # cv2.imshow("Processed Frame", processed_img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
     result_packet["processed_frame"] = processed_img
+    obj_results = result_packet["detections"]
 
     # push processed frame to queue
     obj_res_queue.append(result_packet)
-
 
 
     p2 = subprocess.Popen(
@@ -127,10 +120,10 @@ else:
         print(f"ERROR: run_depth failed:\n{stderr_data}")
         exit(1)
 
-    # p2.wait()
-
     with open(dep_output_json_path, "r") as f:
         result_packet = json.load(f)
+    
+    depth_results = result_packet["processed_frame"]
 
     print("SUCCESS: Received data back from run_depth.py")
 
@@ -139,47 +132,14 @@ else:
     processed_img_np = np.frombuffer(processed_img_bytes, dtype=np.uint8)
     processed_img = cv2.imdecode(processed_img_np, cv2.IMREAD_COLOR)
 
-    # cv2.imshow("Processed Frame", processed_img)
-    # cv2.waitKey(0)    
-    # cv2.destroyAllWindows()
-
     result_packet["processed_frame"] = processed_img
 
     # push processed frame to queue
     depth_res_queue.append(result_packet)
 
 
+    # Find relevant objects and determine depth to objects
+    confidence_threshold = navigatr_config['confidence_threshold']
+
     # processed_out = [None, None, None]
     # view_processed_frames(processed_out, False)
-
-
-
-
-
-
-
-    # Run the subprocesses and pass the frame data as input
-    # p1 = subprocess.Popen(['conda', 'run', '-n', 'navi_env', 'python', '-m', 'src.run_obj'], stdin=subprocess.PIPE)
-    # p1.stdin.write(frame_bytes)
-    # p1.stdin.close()
-
-    # p2 = subprocess.Popen(['conda', 'run', '-n', 'depth-pro', 'python', '-m', 'src.run_depth'], stdin=subprocess.PIPE)
-    # p2.stdin.write(frame_bytes)
-    # p2.stdin.close()
-
-    # p1.wait()
-    # p2.wait()
-
-
-    # p3 = subprocess.Popen(['conda', 'run', '-n', 'env3', 'python', '-m', 'src.run_emot'], stdin=subprocess.PIPE)
-    # p3.stdin.write(frame_bytes)
-    # p3.stdin.close()
-    # p3.wait()
-
-    # obj_out = subprocess.run(['conda', 'run', '-n', 'env1', 'python', '-m', 'src.run_obj'])
-    # dep_out = subprocess.run(['conda', 'run', '-n', 'env2', 'python', '-m', 'src.run_depth'])
-    # emo_out = subprocess.run(['conda', 'run', '-n', 'env3', 'python', '-m', 'src.run_emot'])
-
-    # p3.wait()
-    # Now show results.
-    # subprocess.run(['conda', 'run', '-n', 'env2', 'python', '-m', 'src.run_results'])
