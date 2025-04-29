@@ -126,32 +126,36 @@ def connect_to_webcam(ip_cam_addr, test_toggle: bool = False):
 
     return capture, raw_out, [processed_out_obj, processed_out_dep, processed_out_emo]
 
-def capture_frames(capture: cv2.VideoCapture, raw_out:cv2.VideoWriter=None, test_toggle: bool = False):
-    print(f"Capturing frames...")
+def capture_frame(camera_type: str, capture: cv2.VideoCapture, raw_out:cv2.VideoWriter=None, test_toggle: bool = False, dev_code: str = None):
 
-    # Until webcam has been closed
-    while capture.isOpened():
-        #if thread_lock.acquire():
-        time.sleep(0.04)
-        ret, frame = capture.read()
-        if not ret:
-            break
+    if camera_type == "webcam_single":
+        print(f"Capturing one frame...")
+        if capture.isOpened():
+            #if thread_lock.acquire():
+            time.sleep(0.04)
+            ret, frame = capture.read()
+            if not ret:
+                return
+            print(f"Thread1: Captured single frame")
+            if frame is None:
+                print("\nThread1: Frame is None\n")
+            
+            if test_toggle:
+                raw_out.write(frame)
 
-        if frame is None:
-            print("\nThread1: Frame is None\n")
-        
-        if test_toggle:
-            raw_out.write(frame)
+            try:
+                frame_queue.put(frame)
+                obj_queue.put(frame)
+                depth_queue.put(frame)
+                emot_queue.put(frame)
+                print(f"Thread1: Single frame added to queue. Queue now of size: {len(frame_queue)}")
+            except:
+                print("Thread1: Frame queue is full. Skipping frame...") 
+                #thread_lock.release()
+    
+    if dev_code == "expo":
+        return frame
 
-        try:
-            frame_queue.put(frame)
-            obj_queue.put(frame)
-            depth_queue.put(frame)
-            emot_queue.put(frame)
-        except:
-            print("Thread1: Frame queue is full. Skipping frame...") 
-
-            #thread_lock.release()
 
 def view_processed_frames(processed_out, test_toggle: bool):
     processed_out:List[cv2.VideoWriter]
@@ -168,7 +172,6 @@ def view_processed_frames(processed_out, test_toggle: bool):
     # Move the window to the left slot
     cv2.moveWindow("Models' Results", 0, 0)
     
-
     br = False
     obj_slot = blank_image
     dep_slot = blank_image
@@ -295,40 +298,3 @@ def shutdown_webcam(capture: cv2.VideoCapture, raw_out: cv2.VideoWriter, process
     emot_queue.put(None)
     cv2.destroyAllWindows()
     time.sleep(1)
-
-def capture_one_frame(camera_type: str, capture: cv2.VideoCapture, raw_out:cv2.VideoWriter=None, test_toggle: bool = False, dev_code: str = None):
-
-    if camera_type == "webcam_single":
-        print(f"Capturing one frame...")
-        if capture.isOpened():
-            #if thread_lock.acquire():
-            time.sleep(0.04)
-            ret, frame = capture.read()
-            if not ret:
-                return
-            print(f"Thread1: Captured single frame")
-            if frame is None:
-                print("\nThread1: Frame is None\n")
-            
-            if test_toggle:
-                raw_out.write(frame)
-
-            try:
-                frame_queue.put(frame)
-                obj_queue.put(frame)
-                depth_queue.put(frame)
-                emot_queue.put(frame)
-                print(f"Thread1: Single frame added to queue. Queue now of size: {len(frame_queue)}")
-            except:
-                print("Thread1: Frame queue is full. Skipping frame...") 
-                #thread_lock.release()
-
-    elif camera_type == "saved_single":
-        pass # TODO: Use a image file path to load the single image into the program
-    
-    if dev_code == "expo":
-        return frame
-    # Keep function running until user turns off camera
-    while capture.isOpened():
-        time.sleep(5)
-
