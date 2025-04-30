@@ -7,17 +7,151 @@ import numpy as np
 model = tf.keras.models.load_model("fer_emotion_model.h5", custom_objects={'KerasLayer': hub.KerasLayer})
 
 # Load image
-img = cv2.imread("/home/naitikg2305/ENEE408April24/NaviGatr/src/EmotionDetec/efficientNet/20250312_225342.jpg")
-img = cv2.resize(img, (224, 224))
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Only if needed
-img = img.astype(np.float32) / 255.0
-img = np.expand_dims(img, axis=0)
+image_path = '/home/naitikg2305/ENEE408April24/NaviGatr/src/EmotionDetec/efficientNet/Disgust.jpg'  # Update this with an actual image path
+image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+image = cv2.resize(image, (224, 224))
+image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+image = np.array(image) / 255.0
+image = np.expand_dims(image, axis=0)
 
-# Predict
-pred = model.predict(img)
+# Make a prediction
+
+
+pred = model.predict(image)
 emotion_index = np.argmax(pred)
 confidence = np.max(pred)
-
+print("Disgust \n")
 class_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
-print("Predicted emotion scores:", pred)
+print(f"Predicted Emotion: {class_names[emotion_index]} ({confidence*100:.1f}%)")
+
+
+image_path = '/home/naitikg2305/ENEE408April24/NaviGatr/src/EmotionDetec/efficientNet/Happy.jpg'  # Update this with an actual image path
+image = cv2.imread(image_path)
+image = cv2.resize(image, (224, 224))
+#image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+image = np.array(image) / 255.0
+image = np.expand_dims(image, axis=0)
+
+# Make a prediction
+
+
+pred = model.predict(image)
+emotion_index = np.argmax(pred)
+confidence = np.max(pred)
+print("Happy \n")
+class_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+print(f"Predicted Emotion: {class_names[emotion_index]} ({confidence*100:.1f}%)")
+
+
+image_path = '/home/naitikg2305/ENEE408April24/NaviGatr/src/EmotionDetec/efficientNet/Neutral.jpg'  # Update this with an actual image path
+image = cv2.imread(image_path)
+image = cv2.resize(image, (224, 224))
+#image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+image = np.array(image) / 255.0
+image = np.expand_dims(image, axis=0)
+
+# Make a prediction
+
+
+pred = model.predict(image)
+emotion_index = np.argmax(pred)
+confidence = np.max(pred)
+print("Neutral \n")
+class_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+print(f"Predicted Emotion: {class_names[emotion_index]} ({confidence*100:.1f}%)")
+
+
+
+image_path = '/home/naitikg2305/ENEE408April24/NaviGatr/src/EmotionDetec/efficientNet/Sad.jpg'  # Update this with an actual image path
+image = cv2.imread(image_path)
+image = cv2.resize(image, (224, 224))
+#image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+image = np.array(image) / 255.0
+image = np.expand_dims(image, axis=0)
+
+# Make a prediction
+
+
+pred = model.predict(image)
+emotion_index = np.argmax(pred)
+confidence = np.max(pred)
+print("Sad \n")
+class_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+print(f"Predicted Emotion: {class_names[emotion_index]} ({confidence*100:.1f}%)")
+
+
+
+
+print("\n -----------------------------------------------------\n")
+
+
+image_path = '/home/naitikg2305/ENEE408April24/NaviGatr/src/EmotionDetec/efficientNet/cropped_Neutral.png'  # Update this with an actual image path
+image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+image = cv2.resize(image, (224, 224))
+image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+image = np.array(image) / 255.0
+image = np.expand_dims(image, axis=0)
+
+# Make a prediction
+
+
+pred = model.predict(image)
+emotion_index = np.argmax(pred)
+confidence = np.max(pred)
+print("Cropped Neutral \n")
+class_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+print(f"Predicted Emotion: {class_names[emotion_index]} ({confidence*100:.1f}%)")
+
+
+image_path = '/home/naitikg2305/ENEE408April24/NaviGatr/src/EmotionDetec/efficientNet/cropped_Happy.png'  # Update this with an actual image path
+image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+image = cv2.resize(image, (224, 224))
+image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+image = np.array(image) / 255.0
+image = np.expand_dims(image, axis=0)
+
+# Make a prediction
+
+
+pred = model.predict(image)
+emotion_index = np.argmax(pred)
+confidence = np.max(pred)
+print("Cropped Happy \n")
+class_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+print(f"Predicted Emotion: {class_names[emotion_index]} ({confidence*100:.1f}%)")
+
+
+image_path = '/home/naitikg2305/ENEE408April24/NaviGatr/src/EmotionDetec/efficientNet/cropped_Sad.png'  # Update this with an actual image path
+image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+image = cv2.resize(image, (224, 224))
+image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+image = np.array(image) / 255.0
+image = np.expand_dims(image, axis=0)
+
+# Make a prediction
+
+
+pred = model.predict(image)
+emotion_index = np.argmax(pred)
+confidence = np.max(pred)
+print("Cropped Sad \n")
+class_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+print(f"Predicted Emotion: {class_names[emotion_index]} ({confidence*100:.1f}%)")
+
+
+image_path = '/home/naitikg2305/ENEE408April24/NaviGatr/src/EmotionDetec/efficientNet/cropped_Disgust.png'  # Update this with an actual image path
+image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+image = cv2.resize(image, (224, 224))
+image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+image = np.array(image) / 255.0
+image = np.expand_dims(image, axis=0)
+
+# Make a prediction
+
+
+pred = model.predict(image)
+emotion_index = np.argmax(pred)
+confidence = np.max(pred)
+print("Cropped Disgust \n")
+class_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 print(f"Predicted Emotion: {class_names[emotion_index]} ({confidence*100:.1f}%)")

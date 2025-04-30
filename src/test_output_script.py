@@ -16,17 +16,7 @@ import cv2
 
 # Load the Emotion Model, add this to the main script not here because we dont want it to load it over and over again 
 # add this before the threads even start running, i.e. in the main thread at the start so it stays loaded
-feature_extractor_layer = hub.KerasLayer(
-    "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet1k_s/classification/2",
-    trainable=False
-)
-
-# Ensure it's wrapped inside a model correctly
-model = tf.keras.Sequential([
-    tf.keras.layers.Input(shape=(224, 224, 3)),  # Explicit Input Layer
-    tf.keras.layers.Lambda(lambda x: feature_extractor_layer(x)),  # Wrap Hub Layer in Lambda
-    tf.keras.layers.Dense(7, activation='softmax')  # Change this based on your dataset
-])
+model = tf.keras.models.load_model("fer_emotion_model.h5", custom_objects={'KerasLayer': hub.KerasLayer})
 
 
 
@@ -38,9 +28,11 @@ with open(obj_output_json_path, "r") as f:
 
     
         
-#processed_img_bytes = base64.b64decode(result_packet_obj["processed_frame"])
-#processed_img_np = np.frombuffer(processed_img_bytes, dtype=np.uint8)
-#processed_img = cv2.imdecode(processed_img_np, cv2.IMREAD_COLOR)
+processed_img_bytes = base64.b64decode(result_packet_obj["processed_frame"])
+processed_img_np = np.frombuffer(processed_img_bytes, dtype=np.uint8)
+processed_img = cv2.imdecode(processed_img_np, cv2.IMREAD_COLOR)
+cv2.imshow("Processed Image", processed_img_np)
+cv2.imshow(result_packet_obj["processed_frame"], processed_img)
 
 
 #print(result_packet_obj)
@@ -90,6 +82,28 @@ def getOutput(obj_output, depth_output):
 
     for s in(obj_results[0]):
         box_array=[]
+        name = s['name']
+        if name == "person":
+            x1 = int(s['box']['x1'])
+            y1 = int(s['box']['y1'])
+            x2 = int(s['box']['x2'])
+            y2 = int(s['box']['y2'])
+
+            # Crop from the original image
+            face_crop = processed_img[y1:y2, x1:x2]
+
+            # Resize and preprocess for emotion model
+            face_resized = cv2.resize(face_crop, (224, 224))
+            face_input = face_resized.astype(np.float32) / 255.0
+            face_input = np.expand_dims(face_input, axis=0)
+
+            # Predict emotion
+            prediction = model.predict(face_input)
+            emotion_index = np.argmax(prediction)
+            confidence = np.max(prediction)
+
+            class_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+            print(f"Person detected at {x1},{y1} - {x2},{y2}: Emotion = {class_names[emotion_index]} ({confidence*100:.1f}%)")
 
         for i in  (int(s['box']['x1']), int(s['box']['x2'])):
             name = s['name']
@@ -176,16 +190,9 @@ def getOutput(obj_output, depth_output):
 
 getOutput(obj_results, depth_results)
 
-
+while True: 
+     continue
+     
 
 
 # Load an image
-image_path = '/home/naitikg2305/ENEE408Capstone/NaviGatr/src/EmotionDetec/efficientNet/20250312_225342.jpg'  # Update this with an actual image path
-image = cv2.imread(image_path)
-image = cv2.resize(image, (224, 224))
-image = np.array(image) / 255.0
-image = np.expand_dims(image, axis=0)
-
-# Make a prediction
-predictions = model.predict(image)
-print("Predicted emotion scores:", predictions)
