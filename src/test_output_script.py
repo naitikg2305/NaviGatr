@@ -7,8 +7,26 @@ import time
 import cv2
 import numpy as np
 import torch
+import tensorflow as tf
+import tensorflow_hub as hub
+import numpy as np
+import cv2
 #from src.webcam import capture_one_frame, connect_to_webcam, run_camera_service, view_processed_frames
 #from src.sharable_data import obj_res_queue, depth_res_queue, emot_res_queue
+
+# Load the Emotion Model, add this to the main script not here because we dont want it to load it over and over again 
+# add this before the threads even start running, i.e. in the main thread at the start so it stays loaded
+feature_extractor_layer = hub.KerasLayer(
+    "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet1k_s/classification/2",
+    trainable=False
+)
+
+# Ensure it's wrapped inside a model correctly
+model = tf.keras.Sequential([
+    tf.keras.layers.Input(shape=(224, 224, 3)),  # Explicit Input Layer
+    tf.keras.layers.Lambda(lambda x: feature_extractor_layer(x)),  # Wrap Hub Layer in Lambda
+    tf.keras.layers.Dense(7, activation='softmax')  # Change this based on your dataset
+])
 
 
 
@@ -157,3 +175,17 @@ def getOutput(obj_output, depth_output):
         # view_processed_frames(processed_out, False)
 
 getOutput(obj_results, depth_results)
+
+
+
+
+# Load an image
+image_path = '/home/naitikg2305/ENEE408Capstone/NaviGatr/src/EmotionDetec/efficientNet/20250312_225342.jpg'  # Update this with an actual image path
+image = cv2.imread(image_path)
+image = cv2.resize(image, (224, 224))
+image = np.array(image) / 255.0
+image = np.expand_dims(image, axis=0)
+
+# Make a prediction
+predictions = model.predict(image)
+print("Predicted emotion scores:", predictions)
