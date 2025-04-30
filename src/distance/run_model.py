@@ -1,35 +1,31 @@
 import time
-from PIL import Image
-import json
-from src.sharable_data import thread_lock, depth_queue, depth_res_queue
-import depth_pro
-import get_depth
 
+import numpy as np
+from src.sharable_data import thread_lock, depth_queue, depth_res_queue
+import src.distance.get_depth as get_depth
+from src.distance.get_depth_color_map import get_depth_color_map
+import cv2
 
 def run_dep_detect_model(frame=None, test_toggle: bool = False):
 
-    print(f"Booting up depth detection model...")
-    # Load model and preprocessing transform
-    model, transform = depth_pro.create_model_and_transforms()
-    model.eval()
-    time.sleep(15)  # Give time for camera service to generate its first frame
-    print(f"Running depth detection model...")
+    print(f"Thread4: Running depth detection model...")
 
     frame_given = True  # Assume frame was given
     while True:
         #if thread_lock.acquire():
             if frame is None: # If frame was not given, get from queue and override frame_given assumption
                 frame_given = False
-                print(f"Thread4: Getting frame from obj_queue of queue size: {len(depth_queue)}")
-                frame = depth_queue.get()
+                print(f"Thread4: Getting frame from depth_queue of queue size: {len(depth_queue)}")
+                try:
+                    thread_lock.acquire()
+                    frame = depth_queue.get()
+                    thread_lock.release()
+                except: # If its still None, no more frames in queue
+                    print(f"Thread4: Could not get frame from depth_queue")
+                    thread_lock.release()
+                    break # Stop if no more frames in queue
             if frame is None: # If its still None, no more frames in queue
                 break  # Stop if no more frames in queue
-
-            # Load and preprocess an image.
-            # results = get_depth.get_depth(frame)
-            # depth = results[0]
-            # f_px = results[1]
-
 
             start_watch = time.time()
             # Run inference.
@@ -37,24 +33,31 @@ def run_dep_detect_model(frame=None, test_toggle: bool = False):
             stop_watch = time.time()
             elapsed_time = stop_watch - start_watch
             depth = prediction["depth"]  # Depth in [m].
-            focallength_px = prediction["focallength_px"]  # Focal length in pixels.
-            # thread_lock.release()
+            # focallength_px = prediction["focallength_px"]  # Focal length in pixels.
+            
+            processed_frame = get_depth_color_map(depth)
+            processed_frame.seek(0)
+            processed_frame = np.frombuffer(processed_frame.read(), dtype=np.uint8)
+            processed_frame = cv2.imdecode(processed_frame, cv2.IMREAD_COLOR)
             
             if test_toggle: # Log inference outputs
                 pass
 
             result_packet = {
                 "inference_time": elapsed_time,
-                "focallength_px": focallength_px,
-                "processed_frame": depth
+                "depth_results": prediction,
+                "processed_frame": processed_frame
             }
-            print(f"Thread3: Detected objects in {elapsed_time} seconds")
-            depth_res_queue.append(result_packet)
-            print(f"Thread3: obj_res_queue size: {len(depth_res_queue)}")
+            print(f"Thread4: Detected dpeth map in {elapsed_time} seconds")
+            thread_lock.acquire()
+            depth_res_queue.put(result_packet)
+            thread_lock.release()
+            print(f"Thread4: depth_res_queue size: {len(depth_res_queue)}")
+
+            frame = None
 
             # If frame was passed as an argument, break out of the loop (i.e. only run once)
             if frame_given:
-                return result_packet
-
-
-
+                break
+    print(f"Thread4: ...Finished running depth detection model.")
+    return result_packet if frame_given else None

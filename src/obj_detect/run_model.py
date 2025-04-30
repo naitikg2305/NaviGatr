@@ -1,5 +1,8 @@
+import base64
 import os
+import sys
 import time
+import cv2
 import torch
 
 '''Remove after replacement of nanodet''' 
@@ -12,10 +15,6 @@ from ultralytics import YOLO
 
 import json
 from src.sharable_data import thread_lock, obj_queue, obj_res_queue
-
-# Requires Windows OS, remove if using Linux
-import ctypes
-ctypes.windll.kernel32.SetPriorityClass(ctypes.windll.kernel32.GetCurrentProcess(), 0x00008000) # Makes this thread highest priority
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 config_paths_json = os.path.join(script_dir, "config.json")
@@ -55,7 +54,20 @@ model_path = os.path.join(obj_detect_dir, config_data['model_file'])
 # Load the exported ONNX model
 onnx_model = YOLO("yolo11n.onnx")
 
+'''
+Potential Error:
 
+  File "C:/Users/<user>/anaconda3/lib/site-packages/ultralytics/utils/checks.py", line 541, in check_file
+    raise FileNotFoundError(f"'{file}' does not exist")
+FileNotFoundError: 'yolo11n.onnx' does not exist
+
+
+Temp solution:
+
+Go place 'yolo11n.onnx' in C:/Users/<user>/anaconda3/envs/<env>/Lib/site-packages 
+or in "C:/Users/<user>/anaconda3/Lib/site-packages"
+
+'''
 
 def run_obj_detect_model(frame=None, test_toggle: bool = False):
     """
@@ -72,10 +84,7 @@ def run_obj_detect_model(frame=None, test_toggle: bool = False):
         None
 
     """
-    print(f"Booting up object detection model...")
-    # Give time for camera service to generate its first frame
-    time.sleep(15)
-    print(f"Running object detection model...")
+    print(f"Thread3: Running object detection model...")
 
     frame_given = True  # Assume frame was given
     while True:
@@ -87,7 +96,9 @@ def run_obj_detect_model(frame=None, test_toggle: bool = False):
                     frame = obj_queue.get()
                 except: # If its still None, no more frames in queue
                     print(f"Thread3: Could not get frame from obj_queue")
+                    thread_lock.release()
                     break # Stop if no more frames in queue
+            thread_lock.release()
             print(f"Thread3: Dimensions of input frame: {frame.shape}")
 
             '''Remove after replacement of nanodet'''
@@ -100,9 +111,16 @@ def run_obj_detect_model(frame=None, test_toggle: bool = False):
             elapsed_time = stop_watch - start_watch
             results = results[0]
 
-            thread_lock.release()
-        
+            # Data being bundled as a packet
+            result_packet = {
+                "inference_time": elapsed_time,
+                "detections": [json.loads(results.to_json())],  # all detections
+                "processed_frame": results.plot(),           # list of annotated images
+                "verbose": [r.verbose() for r in results]                  # human-readable summary for each image
+            }
+
             if test_toggle: # Log inference outputs
+                export_results_to_json(result_packet)
                 log_inference_outputs(results)
 
             '''Remove after replacement of nanodet'''
@@ -117,37 +135,40 @@ def run_obj_detect_model(frame=None, test_toggle: bool = False):
             # }
 
             frame = None # Clear frame
-            # Data being bundled as a packet
-            result_packet = {
-                "inference_time": elapsed_time,
-                "detections": [json.loads(results.to_json())],  # all detections
-                "processed_frame": results.plot(),           # list of annotated images
-                "verbose": [r.verbose() for r in results]                  # human-readable summary for each image
-            }
-
 
             print(f"Thread3: Detected objects in {elapsed_time} seconds")
-            obj_res_queue.append(result_packet)
+            thread_lock.acquire()
+            obj_res_queue.put(result_packet)
+            thread_lock.release()
             print(f"Thread3: obj_res_queue size: {len(obj_res_queue)}")
+
 
             # If frame was passed as an argument, break out of the loop (i.e. only run once)
             if frame_given:
-                return result_packet
+                break
+    print(f"Thread3: ...Finished running object detection model.")
+    return result_packet if frame_given else None
+
+
+def export_results_to_json(results):
+    results = results.copy()
+    input_image_path = "obj_input.jpg" # Path to the input image that was captured
+    output_path = "obj_output.json"
+    success, encoded_img = cv2.imencode('.jpg', results["processed_frame"])
+    if not success:
+        print("ERROR: Failed to encode image", file=sys.stderr)
+    with open(input_image_path, "wb") as f:
+        f.write(encoded_img.tobytes())
+    # Convert to base64
+    results["processed_frame"] = base64.b64encode(encoded_img.tobytes()).decode('utf-8')
+    try:
+        with open(output_path, "w") as f:
+            json.dump(results, f)
+    except Exception:
+        print(f"ERROR: Failed to write output to file: {output_path}", file=sys.stderr)
+    return
 
 def log_inference_outputs(res):
-
-    '''Remove after replacement of nanodet'''
-    # # print(f"\nThread3: meta['img_info'] shape: {meta['img_info'].shape}, meta['img_info']: {meta['img_info']}")
-    # print(f"\nThread3: meta['img_info']: {meta['img_info']}")
-    # # print(f"\nThread3: meta['raw_img'] shape: {meta['raw_img'].shape}, meta['raw_img']: {meta['raw_img']}")
-    # print(f"\nThread3: meta['raw_img']: {meta['raw_img']}")
-    # # print(f"\nThread3: meta['img'] Tensor shape: {meta['img'].shape}, meta['img']: {meta['img']}")
-    # print(f"\nThread3: meta['img']: {meta['img']}")
-    # print(f"\nThread3: meta['warp_matrix']: {meta['warp_matrix']}")
-    # # loop through all 80 classification labels
-    # for i in range(80):
-    #     # print(f"\nThread3: res[0][{i}] shape: {res[0][i].shape}, Classification {i} details: {res[0][i]}")
-    #     print(f"\nThread3: Classification {i} details: {res[0][i]}")
     print(f"\nThread3: results: {res}")
     return
 

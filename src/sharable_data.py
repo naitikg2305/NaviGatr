@@ -39,10 +39,9 @@ class RecentFrameQueue:
         try:
             res = self.queue.popleft()
         except:
-            print(f"Could not pop frame from left...")
             res = self.queue.pop()
-            print(f"Successfully popped frame from right...")
-
+            print(f"SharableData: Successfully popped frame from right...")
+            pass
         return res
     
 
@@ -51,7 +50,11 @@ obj_queue = RecentFrameQueue(max_size=1)
 depth_queue = RecentFrameQueue(max_size=1)
 emot_queue = RecentFrameQueue(max_size=1)
 
-# Result queues (i.e. post-inferencing)
-obj_res_queue = deque()
-depth_res_queue = deque()
-emot_res_queue = deque()
+obj_res_queue = RecentFrameQueue(max_size=1)
+depth_res_queue = RecentFrameQueue(max_size=1)
+emot_res_queue = RecentFrameQueue(max_size=1)
+
+# Result queues (i.e. post-inferencing) used for generating saved videos
+# obj_res_queue = deque()
+# depth_res_queue = deque()
+# emot_res_queue = deque()
