@@ -4,7 +4,7 @@ import cv2
 import threading
 from typing import List
 # from picamera2 import Picamera2 # Only available on Linux-based systems
-from src.sharable_data import (frame_queue, thread_lock,
+from src.sharable_data import (frame_queue, thread_lock, output_stack_res,
                                obj_queue, depth_queue, emot_queue,
                                obj_res_queue, depth_res_queue, emot_res_queue)
 
@@ -170,6 +170,7 @@ def capture_frame(camera_type: str, capture: cv2.VideoCapture, raw_out:cv2.Video
             
             if frame is None:
                 print("\nThreadM: Frame is None\n")
+                return
 
             if test_toggle:
                 raw_out.write(frame)
@@ -195,9 +196,9 @@ def view_processed_frames(processed_out, test_toggle: bool):
     margin = np.zeros((400, 20, 3), dtype=np.uint8)
     # Create a window with three slots
     cv2.namedWindow("Models' Results", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Models' Results", 1200, 400)
+    cv2.resizeWindow("Models' Results", 1660, 400) # 400*4 + 20*3
     # Display the blank image in each slot
-    cv2.imshow("Models' Results", np.hstack((blank_image, margin, blank_image, margin, blank_image)))
+    cv2.imshow("Models' Results", np.hstack((blank_image, margin, blank_image, margin, blank_image, margin, blank_image)))
     # Move the window to the left slot
     cv2.moveWindow("Models' Results", 0, 0)
     
@@ -205,11 +206,13 @@ def view_processed_frames(processed_out, test_toggle: bool):
     obj_slot = blank_image
     dep_slot = blank_image
     cap_slot = blank_image
+    out_slot = blank_image
     frame_count = 0
     while br == False:
         obj_bool = True
         dep_bool = True
         cap_bool = True
+        out_bool = True
         time.sleep(0.5)
         thread_lock.acquire()  # Acquire the lock for sharable_data.py
 
@@ -226,6 +229,10 @@ def view_processed_frames(processed_out, test_toggle: bool):
             cap_result_packet = frame_queue.get()
         except:
             cap_bool = False
+        try:
+            out_result_packet = output_stack_res.get()
+        except:
+            out_bool = False
         thread_lock.release()
 
         if obj_bool: # If frame was on object result queue
@@ -259,12 +266,15 @@ def view_processed_frames(processed_out, test_toggle: bool):
         if cap_bool: # If new image has been captured
             cap_slot = cap_result_packet # Update cap display image to most recent capture
 
+        if out_bool:
+            out_slot = out_result_packet
 
         # Display frames with most recent results
         obj_slot = cv2.resize(obj_slot, (400, 400), interpolation=cv2.INTER_AREA)
         dep_slot = cv2.resize(dep_slot, (400, 400), interpolation=cv2.INTER_AREA)
         cap_slot = cv2.resize(cap_slot, (400, 400), interpolation=cv2.INTER_AREA)
-        cv2.imshow("Models' Results", np.hstack((cap_slot, margin, obj_slot, margin, dep_slot)))
+        out_slot = cv2.resize(out_slot, (400, 400), interpolation=cv2.INTER_AREA)
+        cv2.imshow("Models' Results", np.hstack((cap_slot, margin, obj_slot, margin, dep_slot, margin, out_slot)))
 
         if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to exit
             br = True

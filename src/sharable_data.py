@@ -54,6 +54,9 @@ obj_res_queue = RecentFrameQueue(max_size=1)
 depth_res_queue = RecentFrameQueue(max_size=1)
 emot_res_queue = RecentFrameQueue(max_size=1)
 
+output_stack = RecentFrameQueue(max_size=3)
+output_stack_res = RecentFrameQueue(max_size=1)
+
 # Result queues (i.e. post-inferencing) used for generating saved videos
 # obj_res_queue = deque()
 # depth_res_queue = deque()

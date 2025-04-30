@@ -1,44 +1,34 @@
-# import pyttsx3
-
-# engine = pyttsx3.init()
-
-# # List available voices
-# voices = engine.getProperty('voices')
-
-# # Choose a natural-sounding voice (try different indexes)
-# engine.setProperty('voice', voices[1].id)  # Change index for different voices
-
-# # Adjust rate and volume
-# engine.setProperty('rate', 180)  # Speech speed
-# engine.setProperty('volume', 1.0)  # Volume (0.0 to 1.0)
-
-# # Speak text
-# engine.say("Hello! This is a more natural voice using Microsoft SAPI.")
-# engine.runAndWait()
-
-
 import asyncio
 import edge_tts
-from pydub import AudioSegment
-from pydub.playback import play
+import sounddevice as sd
 import io
+import soundfile as sf
+import threading
+
+def play_audio(data, samplerate):
+    """ Function to play the audio on the main thread """
+    sd.play(data, samplerate=samplerate)
+    sd.wait()
 
 async def speak(text):
-    communicate = edge_tts.Communicate(text, "en-US-JennyNeural")  # Change voice if needed
+    """ Async function to handle speech synthesis """
+    communicate = edge_tts.Communicate(text, "en-US-JennyNeural")
     audio_data = b""
 
-    # Stream the audio into a buffer
     async for chunk in communicate.stream():
         if chunk["type"] == "audio":
             audio_data += chunk["data"]
 
-    # Convert to an audio segment and play
-    audio = AudioSegment.from_file(io.BytesIO(audio_data), format="mp3")
-    play(audio)
+    # Decode MP3 data into PCM NumPy array
+    audio_io = io.BytesIO(audio_data)
+    data, samplerate = sf.read(audio_io, dtype='float32')
 
-# Run the async function
-asyncio.run(speak("Hello! This is a real-time text-to-speech example using Edge TTS."))
+    # Use threading to play audio in the main thread
+    threading.Thread(target=play_audio, args=(data, samplerate)).start()
 
+def text_to_speech(text):
+    """ Function to trigger the TTS process """
+    asyncio.run(speak(text))
 
-
-
+# Call the function with the text you want to speak
+text_to_speech("Hello. This is a test of text-to-speech with no robotic voice.")
