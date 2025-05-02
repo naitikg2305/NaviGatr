@@ -1,6 +1,8 @@
 from matplotlib import pyplot as plt
 import numpy as np
 from io import BytesIO
+import matplotlib
+matplotlib.use('Agg')
 
 def get_depth_color_map(depth: np.ndarray):
     inverse_depth = 1 / depth

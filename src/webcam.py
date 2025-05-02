@@ -6,7 +6,8 @@ from typing import List
 # from picamera2 import Picamera2 # Only available on Linux-based systems
 from src.sharable_data import (frame_queue, thread_lock, output_stack_res,
                                obj_queue, depth_queue, emot_queue,
-                               obj_res_queue, depth_res_queue, emot_res_queue)
+                               obj_res_queue, depth_res_queue, emot_res_queue,
+                               colors, reset)
 
 class FrameGrabber:
     def __init__(self, cam_url):
@@ -163,13 +164,13 @@ def connect_to_webcam(ip_cam_addr, test_toggle: bool = False):
 def capture_frame(camera_type: str, capture: cv2.VideoCapture, raw_out:cv2.VideoWriter=None, test_toggle: bool = False):
 
     if camera_type == "webcam_single" or camera_type == "webcam_multi":
-        print(f"ThreadM: Capturing one frame...")
+        print(f"ThreadM: Capturing one frame...") if test_toggle else None
         if capture.isOpened():
 
             frame = capture.read()
             
             if frame is None:
-                print("\nThreadM: Frame is None\n")
+                print("\nThreadM: Frame is None\n") if test_toggle else None
                 return
 
             if test_toggle:
@@ -181,9 +182,9 @@ def capture_frame(camera_type: str, capture: cv2.VideoCapture, raw_out:cv2.Video
                     obj_queue.put(frame)
                     depth_queue.put(frame)
                     emot_queue.put(frame)
-                    print(f"ThreadM: Single frame added to queue. The frame_queue is now size: {len(frame_queue)}")
+                    print(f"ThreadM: Single frame added to queue. The frame_queue is now size: {len(frame_queue)}") if test_toggle else None
                 except:
-                    print("ThreadM: Frame queue is full. Skipping frame...") 
+                    print("ThreadM: Frame queue is full. Skipping frame...")  if test_toggle else None
                 thread_lock.release()
     return frame
 
@@ -191,7 +192,7 @@ def capture_frame(camera_type: str, capture: cv2.VideoCapture, raw_out:cv2.Video
 def view_processed_frames(processed_out, test_toggle: bool):
     processed_out:List[cv2.VideoWriter]
 
-    print(f"Thread2: Viewing processed frames...")
+    print(f"{colors['steel_gray']}Thread2: Viewing processed frames... {reset}") if test_toggle else None
     blank_image = np.zeros((400, 400, 3), dtype=np.uint8)  # Create a blank image as placeholders
     margin = np.zeros((400, 20, 3), dtype=np.uint8)
     # Create a window with three slots
@@ -242,11 +243,11 @@ def view_processed_frames(processed_out, test_toggle: bool):
             inference_time = obj_result_packet["inference_time"]
 
             if processed_frame is not None:
-                print(f"\nThread2: Processed frame is not none")
+                print(f"{colors['steel_gray']}Thread2: Processed frame is not none{reset}") if test_toggle else None
                 if test_toggle:
                     processed_out[0].write(processed_frame.copy())  # Write processed frame to file
                     frame_count += 1  # Increment frame count
-                    print(f"Thread2: [Saved Frame #{frame_count}] Inference Time: {inference_time}")
+                    print(f"{colors['steel_gray']}Thread2: [Saved Frame #{frame_count}] Inference Time: {inference_time}{reset}")
                 obj_slot = processed_frame # Update object display image to most recent inference
 
 
@@ -256,11 +257,11 @@ def view_processed_frames(processed_out, test_toggle: bool):
             inference_time = dep_result_packet["inference_time"]
 
             if processed_frame is not None:
-                print(f"\nThread2: Processed frame is not none")
+                print(f"{colors['steel_gray']}Thread2: Processed frame is not none{reset}") if test_toggle else None
                 if test_toggle:
                     processed_out[1].write(processed_frame.copy())  # Write processed frame to file
                     frame_count += 1  # Increment frame count
-                    print(f"Thread2: [Saved Frame #{frame_count}] Inference Time: {inference_time}")
+                    print(f"{colors['steel_gray']}Thread2: [Saved Frame #{frame_count}] Inference Time: {inference_time}{reset}")
                 dep_slot = processed_frame # Update depth display image to most recent inference
 
         if cap_bool: # If new image has been captured

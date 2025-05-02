@@ -61,3 +61,17 @@ output_stack_res = RecentFrameQueue(max_size=1)
 # obj_res_queue = deque()
 # depth_res_queue = deque()
 # emot_res_queue = deque()
+
+
+
+
+reset = "\033[0m"
+
+colors = {
+    "slate_blue": "\033[38;2;106;123;165m",
+    "olive_green": "\033[38;2;128;128;96m",
+    "dusty_rose": "\033[38;2;176;120;120m",
+    "sage": "\033[38;2;142;156;125m",
+    "steel_gray": "\033[38;2;112;128;144m",
+    "soft_teal": "\033[38;2;104;146;144m",
+}

@@ -4,7 +4,7 @@ import numpy as np
 # import tensorflow as tf
 # import tensorflow_hub as hub
 import numpy as np
-from src.sharable_data import thread_lock, output_stack
+from src.sharable_data import thread_lock, output_stack, colors, reset
 #from src.webcam import capture_one_frame, connect_to_webcam, run_camera_service, view_processed_frames
 #from src.sharable_data import obj_res_queue, depth_res_queue, emot_res_queue
 
@@ -40,11 +40,17 @@ def get_output(test_toggle:bool = False) -> List[str]:
     thread_lock.release()
 
     obj_output, depth_output = None, None
+
+    print(f"{colors['dusty_rose']}Thread5: Output handler grabbed {len(output)} outputs from the output queue. {reset}") if test_toggle else None
     if len(output) == 2:
+        if output[0] == [[]] or output[1] == [[]]:
+            print(f"{colors['dusty_rose']}Thread5: Output handler got empty output from object or depth model {reset}") if test_toggle else None
+            return None
         (obj_output, depth_output) = (output[0], output[1]) if isinstance(output[0][0][0], dict) else (output[1], output[0])
+        print(f"{colors['dusty_rose']}Thread5: Output handler got obj_output: {obj_output} and depth_output: {depth_output} {reset}") if test_toggle else None
     else: return None
 
-    print(f"Output Handler: obj_output: {obj_output} and depth_output: {depth_output}")
+    # print(f"Output Handler: obj_output: {obj_output} and depth_output: {depth_output}")
 
     boxes = []
 
@@ -95,12 +101,14 @@ def get_output(test_toggle:bool = False) -> List[str]:
         else:
             print("Error: Box center out of bounds")
 
+    boxes.sort(key=lambda x: x['closest point'][0])
+
     strings = [0]*len(boxes)
     i = 0
     for s in (boxes):
         if test_toggle:
-            print(( str(s["objame"]) + " "+ str(s["Direction"])+ " " + str(s["closest point"][0]) + " meters away\n" ))
-        strings[i] = ( str(s["objame"]) + " "+ str(s["Direction"])+ " " + str(s["closest point"][0]) + " meters away" )
+            print(f"{colors['dusty_rose']}Thread5: {s['objame']} {s['Direction']} {format(s['closest point'][0], '.1f')} meters away{reset}\n") if test_toggle else None
+        strings[i] = ( str(s["objame"]) + " "+ str(s["Direction"])+ " " + format(s["closest point"][0], ".1f") + " meters away" )
         i += 1
 
     return strings

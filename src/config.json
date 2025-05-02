@@ -11,6 +11,6 @@
 
     "confidence_threshold": 0.5,
 
-    "test_toggle": true
+    "test_toggle": false
 
 }
