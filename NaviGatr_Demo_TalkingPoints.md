@@ -44,18 +44,15 @@ This modular approach keeps the system efficient and scalable.
 
 ---
 
-## 🌊 Eliav (2 minutes)
+## Eliav (2 minutes)
 
-**Depth Detection Model Overview:**
-- Explored:
-  - **MiDaS** – high accuracy but heavy.
-  - **FastDepth** – lighter, but lower resolution.
-  - **Intel RealSense** (not used) – hardware-based, not ideal for wireless wearables.
-- Our current model runs **in the cloud** due to TPU limitations.
-- Outputs a **2D array** with distance values indexed by pixel positions.
-- Pixel-aligned with object model outputs for efficient fusion.
-
-Future iterations may use **on-device LiDAR** or more capable microcontrollers with built-in depth sensing.
+**Depth Estimation Model Overview:**
+- Since our goal was to keep costs low, we wanted to estimate depth with just 2D frames, a technique called Monoptic Depth Estimation
+- There are very few of these models in existence, most models only do relative depth estimates
+- Apple's Depth Pro is a fast and accurate **metric** depth estimator
+- Depth Pro output a 2D array mapping image pixels to metric distances
+- Given the design of Depth Pro and limitations on what can run on our TPU, we are currently running the model in the cloud on AWS
+- In the future, we hope to either re-write Depth Pro to be compatible with the TPU or swap the TPU out for a more versatile edge computing device, like Nvidia's Jetson device line.
 
 ---
 
