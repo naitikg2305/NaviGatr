@@ -1,2 +1,21 @@
-pip install tensorflow keras opencv-python numpy matplotlib
-pip install tensorflow==2.3.0 keras==2.4.3
+# Core ML dependencies
+tensorflow-cpu==2.13.0
+tensorflow-hub==0.13.0
+numpy==1.24.0
+torch==2.0.0
+torchvision==0.15.1
+
+# OpenCV (for image processing and webcam input)
+opencv-python==4.8.1.78
+
+# Ultralytics YOLOv8
+ultralytics==8.0.20  # Tested stable version for ONNX inference
+
+# TQDM for progress bars
+tqdm==4.65.0
+
+# Matplotlib for depth color mapping
+matplotlib==3.7.1
+
+# JSON utilities, etc.
+Pillow==9.5.0
