@@ -4,18 +4,20 @@ import cv2
 import threading
 import json
 import base64
-import tensorflow as tf
-import tensorflow_hub as hub
+# import tensorflow as tf
+# import tensorflow_hub as hub
 import queue
 import time
-from pi_Files.objectDetection.main import run_objModel
-from distance.run_model import run_dep_detect_model
+from objectDetection.main import run_objModel
+# from distance.run_model import run_dep_detect_model
 from distance.get_depth import get_depth
+from EmotionDetec.emotion_tflite import run_emotion_model_on_tpu
+from text_to_speech import text_to_speech
 
 # Load the emotion model once
 # model = tf.keras.models.load_model("fer_emotion_model.h5", custom_objects={'KerasLayer': hub.KerasLayer})
-interpreter = tf.lite.Interpreter(model_path="fer_emotion_model.tflite")
-interpreter.allocate_tensors()
+# interpreter = tf.lite.Interpreter(model_path="fer_emotion_model.tflite")
+# interpreter.allocate_tensors()
 
 # Class labels for the emotion model
 class_names = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
@@ -53,11 +55,11 @@ def run_object_model(frame):
 def run_depth_model(frame):
     return get_depth(frame)["depth"]
 
-# def run_emotion_model(crop):
-#     face_resized = cv2.resize(crop, (224, 224)).astype(np.float32) / 255.0
-#     face_input = np.expand_dims(face_resized, axis=0)
-#     prediction = model.predict(face_input)
-#     return class_names[np.argmax(prediction)], float(np.max(prediction))
+def run_emotion_model(crop):
+    # face_resized = cv2.resize(crop, (224, 224)).astype(np.float32) / 255.0
+    # face_input = np.expand_dims(face_resized, axis=0)
+    
+    return run_emotion_model_on_tpu(crop)
 
 def object_worker(frame):
     obj_results = run_object_model(frame)
@@ -131,14 +133,16 @@ def process_frame_threaded():
             direction = "12 Oclock" if cx < clockQuad * 2.5 else "1 Oclock"
         else:
             direction = "1 Oclock" if cx < clockQuad * 3.5 else "2 Oclock"
-        boxes.append({"objame": name, "closest point": min(box_array), "Direction": direction})
-        # if name == "person":
-        #     face_crop = frame[s["box"][1]:s["box"][3], s["box"][0]:s["box"][2]]
-        #     emotion, confidence = run_emotion_model(face_crop)
-        #     confidence_percentage = confidence*100
-        #     boxes.append({"objame": name, "closest point": min(box_array), "Direction": direction, "Emotion": {emotion} , "Confidence": {confidence_percentage} })
-        # else:
-        #     boxes.append({"objame": name, "closest point": min(box_array), "Direction": direction})
+        # boxes.append({"objame": name, "closest point": min(box_array), "Direction": direction})
+        if name == "person":
+            face_crop = frame[s["box"][1]:s["box"][3], s["box"][0]:s["box"][2]]
+            # cv2.imshow("face_crop", face_crop)
+            # cv2.waitKey(0)
+            emotion, confidence = run_emotion_model(face_crop)
+            confidence_percentage = confidence*100
+            boxes.append({"objame": name, "closest point": min(box_array), "Direction": direction, "Emotion": {emotion} , "Confidence": {confidence_percentage} })
+        else:
+            boxes.append({"objame": name, "closest point": min(box_array), "Direction": direction})
 
 
 
@@ -147,12 +151,13 @@ def process_frame_threaded():
         
     print("\n--- Final Output ---")
     for box in boxes:
-        print(f"{box['objame']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
-        # if(box["objname"] == "person") :
-        #     print(f"{box['objame']} {box["Emotion"]} {box['Direction']} {box['closest point'][0]:.2f} meters away")
-
-        # else:
-        #     print(f"{box['objame']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
+        # print(f"{box['objame']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
+        if(box["objname"] == "person") :
+            print(f"{box['objame']} {box['Emotion']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
+            text_to_speech(f"{box['objame']} {box['Emotion']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
+        else:
+            print(f"{box['objame']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
+            text_to_speech(f"{box['objame']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
 
 
             
