@@ -3,7 +3,9 @@ import os
 import sys
 import time
 import cv2
-import torch
+# import torch
+
+from src.pi_Files.objectDetection.main import run_objModel
 
 '''Remove after replacement of nanodet''' 
 # from nanodet.util import cfg, load_config, Logger
@@ -11,7 +13,7 @@ import torch
 # from nanodet.util import overlay_bbox_cv
 
 '''Replacement code:'''
-from ultralytics import YOLO
+# from ultralytics import YOLO
 
 import json
 from src.sharable_data import thread_lock, obj_queue, obj_res_queue, output_stack, colors, reset
@@ -22,7 +24,7 @@ config_paths_json = os.path.join(script_dir, "config.json")
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
-device = torch.device('cpu') # Change to 'cuda' to run on GPU
+# device = torch.device('cpu') # Change to 'cuda' to run on GPU
 
 """
 "The NVIDIA CUDA® Deep Neural Network library (cuDNN) is a GPU-accelerated library of primitives
@@ -30,8 +32,8 @@ for deep neural networks. cuDNN provides highly tuned implementations for standa
 forward and backward convolution, attention, matmul, pooling, and normalization." [Quoted]
 https://developer.nvidia.com/cudnn
 """
-torch.backends.cudnn.enabled = True  # (https://pytorch.org/docs/stable/backends.html)
-torch.backends.cudnn.benchmark = True  # (https://pytorch.org/docs/stable/backends.html)
+# torch.backends.cudnn.enabled = True  # (https://pytorch.org/docs/stable/backends.html)
+# torch.backends.cudnn.benchmark = True  # (https://pytorch.org/docs/stable/backends.html)
 
 ## Path to model files
 obj_detect_dir = os.path.dirname(os.path.abspath(__file__))  # This script's directory
@@ -52,7 +54,7 @@ model_path = os.path.join(obj_detect_dir, config_data['model_file'])
 ## Export the model to ONNX format
 # model.export(format="onnx")  # creates 'yolo11n.onnx'
 # Load the exported ONNX model
-onnx_model = YOLO("yolo11n.onnx")
+# onnx_model = YOLO("yolo11n.onnx")
 
 '''
 Potential Error:
@@ -106,17 +108,23 @@ def run_obj_detect_model(frame=None, test_toggle: bool = False):
             # Run inference            
             # results = onnx_model("https://ultralytics.com/images/bus.jpg")
             start_watch = time.time()
-            results = onnx_model(frame)
+            # results = onnx_model(frame)
+            results = run_objModel(frame) ######
             stop_watch = time.time()
             elapsed_time = stop_watch - start_watch
-            results = results[0]
+            
+
+            print(results)
 
             # Data being bundled as a packet
+            # result_packet = {
+            #     "inference_time": elapsed_time,
+            #     "detections": json.loads(yolo_to_json(results)),  # all detections
+            #     "processed_frame": results.plot(),           # list of annotated images
+            #     "verbose": [r.verbose() for r in results]                  # human-readable summary for each image
+            # }
             result_packet = {
-                "inference_time": elapsed_time,
-                "detections": json.loads(yolo_to_json(results)),  # all detections
-                "processed_frame": results.plot(),           # list of annotated images
-                "verbose": [r.verbose() for r in results]                  # human-readable summary for each image
+                "results" : results
             }
 
 
@@ -148,7 +156,8 @@ def run_obj_detect_model(frame=None, test_toggle: bool = False):
             print(f"{colors['olive_green']}Thread3: Detected objects in {elapsed_time} seconds {reset}")
             thread_lock.acquire()
             obj_res_queue.put(result_packet)
-            output_stack.put(result_packet["detections"])
+            print(f"{colors['olive_green']}Thread3: Putting {result_packet['results']} on output_stack")
+            output_stack.put(result_packet["results"])
             thread_lock.release()
             print(f"{colors['olive_green']}Thread3: obj_res_queue size: {len(obj_res_queue)} {reset}") if test_toggle else None
 

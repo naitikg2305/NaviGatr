@@ -1,9 +1,9 @@
 import time
 
 import numpy as np
-from src.sharable_data import thread_lock, depth_queue, depth_res_queue, output_stack, colors, reset
-import src.distance.get_depth as get_depth
-from src.distance.get_depth_color_map import get_depth_color_map
+from sharable_data import thread_lock, depth_queue, depth_res_queue, output_stack, colors, reset
+import distance.get_depth as get_depth
+from distance.get_depth_color_map import get_depth_color_map
 import cv2
 
 def run_dep_detect_model(frame=None, test_toggle: bool = False):

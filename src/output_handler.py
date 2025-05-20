@@ -29,6 +29,7 @@ model = tf.keras.Sequential([
 # depth_output = result_packet["processed_frame"]
 
 def get_output(test_toggle:bool = False) -> List[str]:
+
     output = []
     thread_lock.acquire()
     # Loop until queue is empty
@@ -59,20 +60,21 @@ def get_output(test_toggle:bool = False) -> List[str]:
     clockQuad = clockWidth/4
 
 
-    for s in(obj_output[0]):
+    for s in(obj_output):
     # for s in (obj_output):
         box_array=[]
+        for i in (s["box"][0], s["box"][2]):
+        #for i in  (int(s['box']['x1']), int(s['box']['x2'])):
+            
 
-        for i in  (int(s['box']['x1']), int(s['box']['x2'])):
+            name = s['object']
 
-            name = s['name']
-
-            for j in (int(s['box']['y1']), int(s['box']['y2'])):
+            for j in (s["box"][1], s["box"][3]):
                 x = []
                 x.append(depth_output[j][i])
                 box_array.append(x)
 
-        boxXCenter = (int(s['box']['x1']) + int(s['box']['x2']))/2
+        boxXCenter = (s["box"][0]+ s["box"][2])/2
         if(boxXCenter < clockQuad):
             if(boxXCenter < clockQuad/2):
                 boxes.append({"objame": name, 'closest point': min(box_array), 'Direction': "10 Oclock"})

@@ -1,15 +1,15 @@
 # Core ML dependencies
-tensorflow-cpu==2.13.0
-tensorflow-hub==0.13.0
+# tensorflow-cpu==2.13.0
+# tensorflow-hub==0.13.0
 numpy==1.24.0
-torch==2.0.0
-torchvision==0.15.1
+# torch==2.0.0
+# torchvision==0.15.1
 
 # OpenCV (for image processing and webcam input)
 opencv-python==4.8.1.78
 
 # Ultralytics YOLOv8
-ultralytics==8.0.20  # Tested stable version for ONNX inference
+# ultralytics==8.0.20  # Tested stable version for ONNX inference
 
 # TQDM for progress bars
 tqdm==4.65.0
