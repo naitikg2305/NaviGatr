@@ -24,8 +24,6 @@ if __name__ == "__main__":
     obj_executor = cf.ProcessPoolExecutor(max_workers=1, initializer=init_object_executor)
     emot_executor = cf.ProcessPoolExecutor(max_workers=1, initializer=init_emotion_executor)
 
-    futures = {"depth": None, "object": None, "emotion": None}
-
     def capture_frame():
         result = subprocess.run([
             "libcamera-still", "-n", "-t", "100", "-o", "-", "--encoding", "jpg"
@@ -43,17 +41,17 @@ if __name__ == "__main__":
         while True:
             frame = capture_frame()
 
-            futures["depth"] = depth_executor.submit(get_depth, frame)
-            futures["object"] = obj_executor.submit(get_objects, frame)
+            depth_future =  depth_executor.submit(get_depth, frame)
+            object_future = obj_executor.submit(get_objects, frame)
 
             # Wait for the depth and object models to finish running
-            cf.wait(futures.values())
+            cf.wait([depth_executor, object_future])
 
             # Future results
             # The second depth is indexing into the numpy array as the estimated/EXIF focal length
             # is also returned
-            depth_map = futures["depth"].result()["depth"]
-            objects = futures["object"].result()
+            depth_map = depth_future.result()["depth"]
+            objects = object_future.result()
 
             clockWidth = np.size(depth_map[0])
 
@@ -81,12 +79,12 @@ if __name__ == "__main__":
                 confidence = 0
 
                 if obj["label"] == "person" and distance < 1:
-                    futures["emotion"] = emot_executor.submit(get_emotion, frame[obj["box"][1]:obj["box"][3], obj["box"][0]:obj["box"][2]])
+                    emotion_future = emot_executor.submit(get_emotion, frame[obj["box"][1]:obj["box"][3], obj["box"][0]:obj["box"][2]])
 
                     # Wait for emotion model to complete
-                    cf.wait(futures.values())
+                    cf.wait([emotion_future])
 
-                    emotion, confidence = futures["emotion"].result()
+                    emotion, confidence = emotion_future.result()
 
                 output.append({
                         "label": obj["label"],
