@@ -27,14 +27,14 @@ def capture_and_show_cv2():
     ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if result.returncode != 0 or len(result.stdout) == 0:
-        print("[ERROR] Failed to capture image:", result.stderr.decode())
+        print("Couldn't capture frame:", result.stderr.decode())
         return
 
     img_array = np.frombuffer(result.stdout, dtype=np.uint8)
     frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
 
     if frame is None:
-        print("[ERROR] Failed to decode image")
+        print("Couldn't decode frame")
         return
     else:
         print("frame returned")
