@@ -3,8 +3,7 @@ from pycoral.adapters import common
 import cv2
 import numpy as np
 
-emotion_interpreter = size = emotion_input_details = emotion_output_details = None
-emotion_labels = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+emotion_interpreter = None
 
 def init_emotion_executor():
     import os
@@ -18,13 +17,12 @@ def init_emotion_executor():
     emotion_interpreter = edgetpu.make_interpreter(EMOTION_MODEL_FILE)
     emotion_interpreter.allocate_tensors()
 
-    size = common.input_size(emotion_interpreter)
-
-    emotion_input_details = emotion_interpreter.get_input_details()
-    emotion_output_details = emotion_interpreter.get_output_details()
-
 def get_emotion(bounding_box):
     global emotion_interpreter
+
+    size = common.input_size(emotion_interpreter)
+    emotion_output_details = emotion_interpreter.get_output_details()
+    emotion_labels = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 
     resized = cv2.resize(bounding_box, size)
 

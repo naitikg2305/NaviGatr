@@ -45,7 +45,7 @@ if __name__ == "__main__":
             object_future = obj_executor.submit(get_objects, frame)
 
             # Wait for the depth and object models to finish running
-            cf.wait([depth_executor, object_future])
+            cf.wait([depth_future, object_future])
 
             # Future results
             # The second depth is indexing into the numpy array as the estimated/EXIF focal length

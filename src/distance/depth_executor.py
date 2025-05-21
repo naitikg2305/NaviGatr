@@ -4,23 +4,23 @@ from io import BytesIO
 import numpy as np
 import json
 import os
-
-dist_dir = os.path.dirname(__file__)
-API_CERT_FILE = f"{dist_dir}/cert.pem"
-API_CONFIG_FILE = f"{dist_dir}/api-config.json"
-
-if not os.path.exists(API_CONFIG_FILE):
-    raise FileNotFoundError("You must create a api-config.json file in the directory with the keys: API_KEY, API_URL, API_PORT.")
-
-with open(f"{dist_dir}/api-config.json", "r") as api_config_file:
-    api_config = json.load(api_config_file)
-
-headers = {
-        "accept": "application/octet-stream",
-        "Authorization": f"Bearer {api_config['API_KEY']}"
-    }
     
 def get_depth(frame):
+    dist_dir = os.path.dirname(__file__)
+    API_CERT_FILE = f"{dist_dir}/cert.pem"
+    API_CONFIG_FILE = f"{dist_dir}/api-config.json"
+
+    if not os.path.exists(API_CONFIG_FILE):
+        raise FileNotFoundError("You must create a api-config.json file in the directory with the keys: API_KEY, API_URL, API_PORT.")
+
+    with open(f"{dist_dir}/api-config.json", "r") as api_config_file:
+        api_config = json.load(api_config_file)
+
+    headers = {
+            "accept": "application/octet-stream",
+            "Authorization": f"Bearer {api_config['API_KEY']}"
+        }
+
     _, image = cv2.imencode(".jpg", frame)
 
     file = {
