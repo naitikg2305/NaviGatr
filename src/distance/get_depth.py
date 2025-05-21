@@ -18,11 +18,7 @@ def get_depth(img_ndarray):
         "Authorization": f"Bearer {API_KEY}"
     }
 
-    try:
-        _, image = cv2.imencode(".jpg", img_ndarray)
-    except Exception as e:
-        print(f"Error encoding image: {e}")
-        return None
+    _, image = cv2.imencode(".jpg", img_ndarray)
     
     files = {
         "image": ("frame.jpg", image, "image/jpg")
