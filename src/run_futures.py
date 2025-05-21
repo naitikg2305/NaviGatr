@@ -41,8 +41,8 @@ if __name__ == "__main__":
         while True:
             frame = capture_frame()
 
-            depth_future =  depth_executor.submit(get_depth, frame)
-            object_future = obj_executor.submit(get_objects, frame)
+            depth_future =  depth_executor.submit(get_depth, frame.copy())
+            object_future = obj_executor.submit(get_objects, frame.copy())
 
             # Wait for the depth and object models to finish running
             cf.wait([depth_future, object_future])
