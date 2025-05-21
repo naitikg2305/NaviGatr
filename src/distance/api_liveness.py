@@ -14,7 +14,7 @@ with open(f"{dist_dir}/api-config.json", "r") as api_config_file:
 
 headers = {
         "accept": "application/octet-stream",
-        "Authorization": f"Bearer {api_config["API_KEY"]}"
+        "Authorization": f"Bearer {api_config['API_KEY']}"
     }
 
 # Does connectivity test with server
@@ -28,7 +28,7 @@ def liveness_check():
     # Liveness check
     try:
         global headers
-        response = requests.get(f"{api_config["API_URL"]}:{api_config["API_PORT"]}", headers=headers, verify=API_CERT_FILE, timeout=5)
+        response = requests.get(f"{api_config['API_URL']}:{api_config['API_PORT']}", headers=headers, verify=API_CERT_FILE, timeout=5)
         
         if response.status_code == 200:
             print("Server up and running, API key correct, and SSL cert correct!")

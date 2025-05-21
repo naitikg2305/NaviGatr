@@ -17,7 +17,7 @@ with open(f"{dist_dir}/api-config.json", "r") as api_config_file:
 
 headers = {
         "accept": "application/octet-stream",
-        "Authorization": f"Bearer {api_config["API_KEY"]}"
+        "Authorization": f"Bearer {api_config['API_KEY']}"
     }
     
 def get_depth(frame):
@@ -27,7 +27,7 @@ def get_depth(frame):
         "image": ("frame.jpg", image, "image/jpg")
     }
 
-    response = requests.post(f"{api_config["API_URL"]}:{api_config["API_PORT"]}", headers=headers, files=file, verify=API_CERT_FILE)
+    response = requests.post(f"{api_config['API_URL']}:{api_config['API_PORT']}", headers=headers, files=file, verify=API_CERT_FILE)
 
     if response.status_code == 200:
         depth_data = BytesIO(response.content)
