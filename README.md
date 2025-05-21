@@ -10,6 +10,3 @@ The application is designed to ingest frames (from images or video feed), run mo
 
 The application is designed to be prototyped on Raspberry Pi5 Single-Board Conmputer with periphials that includes speaker, fan (cooling system for hardware), Google Coral TPU, and a powerbank. The desired end product is an implementation using state-of-the-art smart glasses such as Meta's Orion    glasses.
 
-![Navigating Bot](imgs/navigating_bot.gif)
-###### https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHBldjduN3RjOXpjY2UwcTE4NGh2and6anc3d2lmY3JnZTYyMnNyNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lb8juUW6PkKzjNChMY/giphy.gif
-
