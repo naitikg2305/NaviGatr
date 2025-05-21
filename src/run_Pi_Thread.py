@@ -96,9 +96,9 @@ def process_frame_threaded():
             face_crop = frame[s["box"][1]:s["box"][3], s["box"][0]:s["box"][2]]
             emotion, confidence = run_emotion_model(face_crop)
             confidence_percentage = confidence*100
-            boxes.append({"objame": name, "closest point": min(box_array), "Direction": direction, "Emotion": {emotion} , "Confidence": {confidence_percentage} })
+            boxes.append({"objname": name, "closest point": min(box_array), "Direction": direction, "Emotion": {emotion} , "Confidence": {confidence_percentage} })
         else:
-            boxes.append({"objame": name, "closest point": min(box_array), "Direction": direction})
+            boxes.append({"objname": name, "closest point": min(box_array), "Direction": direction})
 
 
 
@@ -108,11 +108,11 @@ def process_frame_threaded():
     print("\n--- Final Output ---")
     for box in boxes:
         if(box["objname"] == "person") :
-            print(f"{box['objame']} {box['Emotion']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
-            text_to_speech(f"{box['objame']} {box['Emotion']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
+            print(f"{box['objname']} {box['Emotion']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
+            text_to_speech(f"{box['objname']} {box['Emotion']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
         else:
-            print(f"{box['objame']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
-            text_to_speech(f"{box['objame']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
+            print(f"{box['objname']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
+            text_to_speech(f"{box['objname']} {box['Direction']} {box['closest point'][0]:.2f} meters away")
 
 
             
