@@ -17,8 +17,11 @@ def init_emotion_executor():
     emotion_interpreter = edgetpu.make_interpreter(EMOTION_MODEL_FILE)
     emotion_interpreter.allocate_tensors()
 
-def get_emotion(bounding_box):
+def get_emotion(bounding_box_bytes):
     global emotion_interpreter
+
+    img_array = np.frombuffer(bounding_box_bytes, np.uint8)
+    bounding_box = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
 
     size = common.input_size(emotion_interpreter)
     emotion_output_details = emotion_interpreter.get_output_details()

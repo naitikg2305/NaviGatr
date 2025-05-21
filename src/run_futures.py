@@ -79,7 +79,10 @@ if __name__ == "__main__":
                 confidence = 0
 
                 if obj["label"] == "person" and distance < 1:
-                    emotion_future = emot_executor.submit(get_emotion, frame[obj["box"][1]:obj["box"][3], obj["box"][0]:obj["box"][2]])
+                    bbox = frame[obj["box"][1]:obj["box"][3], obj["box"][0]:obj["box"][2]]
+                    _, encoded = cv2.imencode(".jpg", bbox)
+                    bbox_bytes = encoded.tobytes()
+                    emotion_future = emot_executor.submit(get_emotion, bbox_bytes)
 
                     # Wait for emotion model to complete
                     cf.wait([emotion_future])
