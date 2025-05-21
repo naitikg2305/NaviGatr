@@ -28,6 +28,9 @@ def init_object_executor():
 def get_objects(frame):
     global object_interpreter
 
+    img_array = np.frombuffer(frame, dtype=np.uint8)
+    frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+
     resized = cv2.resize(frame, size)
     input_tensor = resized.flatten().astype(np.uint8)
     edgetpu.run_inference(object_interpreter, input_tensor)

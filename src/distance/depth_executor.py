@@ -10,6 +10,9 @@ def get_depth(frame):
     API_CERT_FILE = f"{dist_dir}/cert.pem"
     API_CONFIG_FILE = f"{dist_dir}/api-config.json"
 
+    img_array = np.frombuffer(frame, dtype=np.uint8)
+    frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+
     if not os.path.exists(API_CONFIG_FILE):
         raise FileNotFoundError("You must create a api-config.json file in the directory with the keys: API_KEY, API_URL, API_PORT.")
 

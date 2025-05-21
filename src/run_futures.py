@@ -32,17 +32,17 @@ if __name__ == "__main__":
         if result.returncode != 0 or len(result.stdout) == 0:
             raise OSError("Camera capture failed...")
 
-        img_array = np.frombuffer(result.stdout, dtype=np.uint8)
-        frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        # img_array = np.frombuffer(result.stdout, dtype=np.uint8)
+        # frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
 
-        return frame
+        return result.stdout
 
     try:
         while True:
             frame = capture_frame()
 
-            depth_future =  depth_executor.submit(get_depth, frame.copy())
-            object_future = obj_executor.submit(get_objects, frame.copy())
+            depth_future =  depth_executor.submit(get_depth, frame)
+            object_future = obj_executor.submit(get_objects, frame)
 
             # Wait for the depth and object models to finish running
             cf.wait([depth_future, object_future])
